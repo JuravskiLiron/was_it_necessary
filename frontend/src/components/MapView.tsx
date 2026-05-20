@@ -141,8 +141,10 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
       attributionControl: false,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+  maxZoom: 20,
+  attribution: '© Stadia Maps',
+}).addTo(map);    L.control.zoom({ position: 'bottomright' }).addTo(map);
     if (!isMobile) (map.getContainer() as HTMLElement).style.cursor = 'crosshair';
 
     const group = L.layerGroup().addTo(map);

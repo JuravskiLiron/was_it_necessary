@@ -69,8 +69,9 @@ body{font-family:var(--ff);background:var(--bg0);color:var(--txt);-webkit-font-s
 .main{flex:1;display:flex;overflow:hidden;position:relative}
 .map-wrap{flex:1;position:relative;overflow:hidden}
 .leaflet-container{width:100%!important;height:100%!important;cursor:crosshair!important}
-.leaflet-tile{filter:brightness(.65) saturate(.2) hue-rotate(195deg) contrast(1.1)}
-
+.leaflet-tile {
+  filter: brightness(.9) saturate(.6) hue-rotate(200deg);
+}
 /* ── DESKTOP Sidebar (right panel) ── */
 .sidebar{
   width:0;flex-shrink:0;
