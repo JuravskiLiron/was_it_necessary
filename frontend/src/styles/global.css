@@ -111,8 +111,11 @@ body { font-family: var(--ffs); background: var(--bg0); color: var(--txt); -webk
 .main { flex: 1; display: flex; overflow: hidden; }
 .map-wrap { flex: 1; position: relative; overflow: hidden; }
 .leaflet-container { width: 100% !important; height: 100% !important; cursor: crosshair !important; }
-.leaflet-tile { filter: brightness(.88) saturate(.6) hue-rotate(185deg) contrast(.95); }
 
+.map-satellite .leaflet-tile,
+.map-hybrid .leaflet-tile {
+  filter: none;
+}
 /* ── Sidebar ── */
 .sidebar {
   width: 0;
