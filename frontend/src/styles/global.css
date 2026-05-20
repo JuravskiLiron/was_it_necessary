@@ -70,7 +70,7 @@ body{font-family:var(--ff);background:var(--bg0);color:var(--txt);-webkit-font-s
 .map-wrap{flex:1;position:relative;overflow:hidden}
 .leaflet-container{width:100%!important;height:100%!important;cursor:crosshair!important}
 .leaflet-tile {
-  filter: brightness(.9) saturate(.6) hue-rotate(200deg);
+  filter: brightness(.9) saturate(.7) hue-rotate(185deg) contrast(.95);
 }
 /* ── DESKTOP Sidebar (right panel) ── */
 .sidebar{
