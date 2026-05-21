@@ -25,11 +25,7 @@ export function Header({ total }: Props) {
 
       <div className="h-div" />
 
-      <div className="h-status">
-        <div className="h-status-dot" />
-        <span>Live · Gaza</span>
-      </div>
-
+     
       <div className="h-right">
         <div className="h-stat">
           <div className="h-stat-n" style={{ color: 'var(--txt2)' }}>{total}</div>
@@ -43,11 +39,7 @@ export function Header({ total }: Props) {
           <div className="h-stat-n" style={{ color: 'var(--red)' }}>1</div>
           <div className="h-stat-l">Debunked</div>
         </div>
-        <div className="h-div" />
-        <div className="h-time">
-          <div>{datePart}</div>
-          <div>{timePart}</div>
-        </div>
+       
       </div>
     </header>
   );

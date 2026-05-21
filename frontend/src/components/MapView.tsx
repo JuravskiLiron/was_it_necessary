@@ -24,7 +24,7 @@ const STATUS_COLOR: Record<string, string> = {
 type MapStyle = 'dark' | 'satellite' | 'hybrid';
 
 const STYLES: { id: MapStyle; label: string; url: string }[] = [
-  { id: 'dark', label: '2D', url: `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${MAPTILER_KEY}` },
+  { id: 'dark',      label: '2D',  url: `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${MAPTILER_KEY}` },
   { id: 'satellite', label: 'SAT', url: `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
   { id: 'hybrid',    label: 'HYB', url: `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
 ];
@@ -57,10 +57,12 @@ function syncMarkers(
   isMobile: boolean,
   isMobileRef: { current: boolean },
   onSelectRef: { current: (e: StrikeEvent) => void },
+  drawBlastRef: { current: (e: StrikeEvent) => void },
 ) {
   markers.forEach((m, id) => {
     if (!events.find(e => e.id === id)) { m.remove(); markers.delete(id); }
   });
+
   events.forEach(event => {
     const isSel = selectedEvent?.id === event.id;
     const existing = markers.get(event.id);
@@ -69,10 +71,13 @@ function syncMarkers(
       existing.setZIndexOffset(isSel ? 2000 : 1000);
       return;
     }
+
     const cfg = CATEGORY_CONFIG[event.category] ?? { label: '', color: '#3b82f6' };
     const sc = STATUS_COLOR[event.verificationStatus] ?? '#3b82f6';
     const slabel = { verified: '✓ VERIFIED', disputed: '⚠ DISPUTED', debunked: '✗ FALSE ATTRIBUTION' }[event.verificationStatus] ?? '';
+
     const marker = L.marker(event.coordinates as L.LatLngExpression, { icon: makeIcon(event, false, isMobile), zIndexOffset: 1000 });
+
     marker.bindPopup(`
       <div style="padding:14px 15px;min-width:210px;font-family:'JetBrains Mono',monospace">
         <div style="font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:#555;margin-bottom:5px">${cfg.label}</div>
@@ -83,10 +88,23 @@ function syncMarkers(
           VIEW FULL BREAKDOWN →
         </button>
       </div>`, { maxWidth: 260, minWidth: 220 });
-    marker.on('click', () => marker.openPopup());
+
+    marker.on('click', () => {
+      // Всегда рисуем радиус сразу при клике
+      drawBlastRef.current(event);
+      if (isMobileRef.current) {
+        // На мобайле: показываем радиус 2 сек, потом sidebar
+        marker.openPopup();
+      } else {
+        marker.openPopup();
+        onSelectRef.current(event);
+      }
+    });
+
     marker.addTo(map);
     markers.set(event.id, marker);
   });
+
   (window as any).__sel = (id: string) => {
     const e = events.find(x => x.id === id);
     if (e) onSelectRef.current(e);
@@ -104,12 +122,57 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
   const onSelectRef = useRef(onSelect);
   const selectedRef = useRef(selectedEvent);
   const isMobileRef = useRef(isMobile);
+  const drawBlastRef = useRef((_e: StrikeEvent) => {});
   const [mapStyle, setMapStyle] = useState<MapStyle>('dark');
 
   eventsRef.current = events;
   onSelectRef.current = onSelect;
   selectedRef.current = selectedEvent;
   isMobileRef.current = isMobile;
+
+  // Определяем drawBlast через ref — доступен везде
+  drawBlastRef.current = (event: StrikeEvent) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Убираем старый круг
+    if (blastCircleRef.current) { blastCircleRef.current.remove(); blastCircleRef.current = null; }
+
+    const ev = event as StrikeEvent & { blastRadius?: number; streetZoom?: number };
+    const [lat, lng] = ev.coordinates;
+    const zoom = ev.streetZoom ?? (isMobile ? 15 : 16);
+
+    // Zoom к месту
+    map.flyTo([lat, isMobile ? lng : lng - 0.008], zoom, { duration: 1.2, easeLinearity: 0.2 });
+
+    // Flash
+    const container = map.getContainer();
+    const flash = document.createElement('div');
+    flash.style.cssText = `position:absolute;inset:0;z-index:800;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(229,62,62,.25) 0%,transparent 65%);animation:mapflash .7s ease-out forwards;`;
+    container.appendChild(flash);
+    setTimeout(() => { if (flash.parentNode) flash.remove(); }, 750);
+
+    // Blast circle
+    const radius = ev.blastRadius;
+    if (radius && radius > 0) {
+      const circle = L.circle([lat, lng] as L.LatLngExpression, {
+        radius, color: '#e53e3e', fillColor: '#e53e3e',
+        fillOpacity: 0.06, weight: 1.5, dashArray: '5,4', opacity: 0,
+      });
+      circle.addTo(map);
+      blastCircleRef.current = circle;
+      let op = 0;
+      const timer = setInterval(() => {
+        op = Math.min(op + 0.04, 0.5);
+        circle.setStyle({ opacity: op });
+        if (op >= 0.5) clearInterval(timer);
+      }, 16);
+      circle.bindTooltip(
+        `<div style="font-size:9px;color:#e53e3e;font-weight:600;letter-spacing:.08em">BLAST RADIUS · ~${radius}m</div>`,
+        { sticky: true, opacity: 1, className: 'blast-tip' }
+      );
+    }
+  };
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -133,22 +196,18 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     tileLayer.addTo(map);
     tileLayerRef.current = tileLayer;
     map.getContainer().classList.add('map-dark');
-
-    //
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     if (!isMobile) (map.getContainer() as HTMLElement).style.cursor = 'crosshair';
     mapRef.current = map;
     map.whenReady(() => {
       setTimeout(() => {
-        syncMarkers(map, eventsRef.current, selectedRef.current, markersRef.current, isMobileRef.current, isMobileRef, onSelectRef);
+        syncMarkers(map, eventsRef.current, selectedRef.current, markersRef.current, isMobileRef.current, isMobileRef, onSelectRef, drawBlastRef);
       }, 100);
     });
     return () => { map.remove(); mapRef.current = null; markersRef.current.clear(); };
   }, []); // eslint-disable-line
 
-  // Switch style — remove filter for satellite/hybrid
-  // пока что не имеет значение так ка стиль убран в глобал ссс
-  /* useEffect(() => {
+  useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const styleObj = STYLES.find(s => s.id === mapStyle)!;
@@ -157,11 +216,10 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     newLayer.addTo(map);
     markersRef.current.forEach(m => m.addTo(map));
     tileLayerRef.current = newLayer;
-    // This drives the CSS filter — dark gets filter, sat/hyb get none
     const container = map.getContainer();
     container.classList.remove('map-dark', 'map-satellite', 'map-hybrid');
     container.classList.add(`map-${mapStyle}`);
-  }, [mapStyle]); */
+  }, [mapStyle]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -175,31 +233,17 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    syncMarkers(map, events, selectedEvent, markersRef.current, isMobile, isMobileRef, onSelectRef);
+    syncMarkers(map, events, selectedEvent, markersRef.current, isMobile, isMobileRef, onSelectRef, drawBlastRef);
   }, [events, selectedEvent, onSelect, isMobile]);
 
+  // На десктопе радиус также обновляется при смене selectedEvent
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    if (blastCircleRef.current) { blastCircleRef.current.remove(); blastCircleRef.current = null; }
-    if (!selectedEvent) return;
-    const ev = selectedEvent as StrikeEvent & { blastRadius?: number; streetZoom?: number };
-    const [lat, lng] = ev.coordinates;
-    const zoom = ev.streetZoom ?? (isMobile ? 15 : 16);
-    map.flyTo([lat, isMobile ? lng : lng - 0.008], zoom, { duration: 1.4, easeLinearity: 0.2 });
-    const container = map.getContainer();
-    const flash = document.createElement('div');
-    flash.style.cssText = `position:absolute;inset:0;z-index:800;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(229,62,62,.25) 0%,transparent 65%);animation:mapflash .7s ease-out forwards;`;
-    container.appendChild(flash);
-    setTimeout(() => { if (flash.parentNode) flash.remove(); }, 750);
-    const radius = ev.blastRadius;
-    if (radius && radius > 0) {
-      const circle = L.circle([lat, lng] as L.LatLngExpression, { radius, color: '#e53e3e', fillColor: '#e53e3e', fillOpacity: 0.06, weight: 1.5, dashArray: '5,4', opacity: 0 });
-      circle.addTo(map);
-      blastCircleRef.current = circle;
-      let op = 0;
-      const timer = setInterval(() => { op = Math.min(op + 0.04, 0.5); circle.setStyle({ opacity: op }); if (op >= 0.5) clearInterval(timer); }, 16);
-      circle.bindTooltip(`<div style="font-size:9px;color:#e53e3e;font-weight:600;letter-spacing:.08em">BLAST RADIUS · ~${radius}m</div>`, { sticky: true, opacity: 1, className: 'blast-tip' });
+    if (!isMobile && selectedEvent) {
+      drawBlastRef.current(selectedEvent);
+    }
+    if (!selectedEvent && blastCircleRef.current) {
+      blastCircleRef.current.remove();
+      blastCircleRef.current = null;
     }
   }, [selectedEvent, isMobile]);
 
@@ -207,7 +251,6 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     <div className="map-wrap" style={{ position: 'relative' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 
-      {/* Style switcher */}
       <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 500, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {STYLES.map(s => (
           <button key={s.id} onClick={() => setMapStyle(s.id)} style={{
@@ -220,9 +263,6 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
         ))}
       </div>
 
-      
-
-      {/* Legend desktop */}
       {!isMobile && (
         <div style={{ position: 'absolute', bottom: 14, left: 14, zIndex: 500, background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 4, padding: '10px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, display: 'flex', flexDirection: 'column', gap: 7, backdropFilter: 'blur(8px)' }}>
           {[{ color: '#e53e3e', label: 'Misattributed' }, { color: '#b388ff', label: 'Tunnel' }, { color: '#d69e2e', label: 'Weapons' }, { color: '#4299e1', label: 'Command' }].map(item => (
@@ -238,14 +278,10 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
         </div>
       )}
 
-      {/* Mobile hint */}
       {isMobile && (
-       
         <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 500, background: 'rgba(10,10,10,.88)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 20, padding: '6px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#555', letterSpacing: '.08em', pointerEvents: 'none', whiteSpace: 'nowrap', backdropFilter: 'blur(8px)' }}>
           TAP INCIDENT TO EXPLORE
         </div>
-   
-        
       )}
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)', animation: 'scanline 8s linear infinite', pointerEvents: 'none', zIndex: 400 }} />

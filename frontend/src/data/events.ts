@@ -338,7 +338,7 @@ mediaStats: {
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  hospital:       { label: 'Misattributed to Israel', color: '#ffffffff', icon: '🏥' },
+  hospital:       { label: 'Misattributed to Israel', color: '#00ffaaff', icon: '🏥' },
   tunnel:         { label: 'Tunnel / Underground',    color: '#7f3e00ff', icon: '⛏' },
   weapons_depot:  { label: 'Weapons Depot',           color: '#f59e0b', icon: '💣' },
   command_center: { label: 'Command Center',          color: '#ffea00ff', icon: '🎯' },
