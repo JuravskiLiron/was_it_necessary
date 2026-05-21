@@ -1,23 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg0: #0a0a0a;
-  --bg1: #111111;
-  --bg2: #181818;
-  --bg3: #1f1f1f;
+    --bg0: #0f1115;
+  --bg1: #2b3240;
+  --bg2: #171b22;
+  --bg3: #1e242d;
 
   --border: rgba(255,255,255,.08);
   --border2: rgba(255,255,255,.14);
 
-  --txt:  #e8e8e8;
-  --txt2: #888888;
-  --txt3: #444444;
+   --txt:  #f2f2f2;
+  --txt2: #b3b3b3;
+  --txt3: #7a7a7a;
 
   --red:   #e53e3e;
   --green: #38a169;
   --blue:  #4299e1;
   --amber: #d69e2e;
-
+  /*--accent: #6ea8fe; --><!-- IGNORE -- */
   --sidebar: 480px;
   --ff:  'Inter', monospace;
   --ffs: 'Inter', sans-serif;
