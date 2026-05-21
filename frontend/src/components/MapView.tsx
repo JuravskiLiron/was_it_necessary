@@ -93,7 +93,6 @@ function syncMarkers(
       drawBlastRef.current(event);
       if (isMobileRef.current) {
         marker.openPopup();
-        setTimeout(() => onSelectRef.current(event), 2000);
       } else {
         marker.openPopup();
         onSelectRef.current(event);
