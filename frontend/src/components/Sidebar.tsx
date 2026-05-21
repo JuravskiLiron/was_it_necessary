@@ -28,7 +28,7 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
   const startYRef = useRef(0);
 
   const onTouchStart = (e: React.TouchEvent) => { startYRef.current = e.touches[0].clientY; };
-  //const onTouchEnd   = (e: React.TouchEvent) => { if (e.changedTouches[0].clientY - startYRef.current > 80) onClose(); };
+  const onTouchEnd   = (e: React.TouchEvent) => {};
 
   if (!event) return <div className={`sidebar${isOpen ? ' open' : ''}`} />;
 
@@ -50,10 +50,10 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
       className={`sidebar${isOpen ? ' open' : ''}`}
       ref={sheetRef}
       onTouchStart={onTouchStart}
-      //onTouchEnd={onTouchEnd}
+      onTouchEnd={onTouchEnd}
     >
       <button className="sb-close" onClick={onClose} aria-label="Close">✕</button>
-      <div className="s-inner">
+      <div className="sb-inner">
 
         {/* ── Header ── */}
         <div className="sb-head">
