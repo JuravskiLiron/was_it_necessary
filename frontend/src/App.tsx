@@ -19,13 +19,14 @@ function useIsMobile() {
 export default function App() {
   const [selectedEvent, setSelectedEvent] = useState<StrikeEvent | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeArena, setActiveArena] = useState('gaza');
+  const [activeArena, setActiveArena] = useState('israel');
   const [search, setSearch] = useState('');
   const isMobile = useIsMobile();
 
   const arenaEvents = DEMO_EVENTS.filter(e => {
     if (activeArena === 'gaza') return e.coordinates[0] < 32.5 && e.coordinates[0] > 31;
     if (activeArena === 'lebanon') return e.coordinates[0] > 33;
+    
     return true;
   }).filter(e =>
     !search ||

@@ -803,7 +803,8 @@ export const CATEGORY_CONFIG: Record<string, { label: string; color: string; ico
 };
 
 export const ARENAS = [
-  { id: 'gaza',     label: 'Gaza',      locked: false, center: [32, 34.90] as [number, number], zoom: 8 },
+  { id: 'israel',     label: 'Israel',      locked: false, center: [32, 34.90] as [number, number], zoom: 8 },
+  { id: 'gaza',     label: 'Gaza',      locked: false, center: [31.50, 34.47] as [number, number], zoom: 10 },
   { id: 'lebanon',  label: 'Lebanon',   locked: false,  center: [33.88, 35.50] as [number, number], zoom: 10 },
   { id: 'westbank', label: 'West Bank', locked: false,  center: [31.90, 35.20] as [number, number], zoom: 10 },
   { id: 'syria',    label: 'Syria',     locked: true,  center: [33.50, 36.30] as [number, number], zoom: 9  },
