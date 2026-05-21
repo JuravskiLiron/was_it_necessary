@@ -329,22 +329,24 @@ mediaStats: {
     { name: 'WAFA', initialClaim: 'Israel bombs civilian home, 4 dead', corrected: false },
     { name: 'Al Jazeera', initialClaim: 'Residential building targeted', corrected: false },
     { name: 'Reuters', initialClaim: 'Strike on Khan Yunis building', corrected: true, correctionDate: '2024-02-14' },
-    { name: 'AP', initialClaim: 'Airstrike kills civilians', corrected: true, correctionDate: '2024-02-14' },
+    { name: 'AP', initialClaim: 'Airstrike kills civilians', corrected: false, correctionDate: '2024-02-14' }, 
+    //добавить источник, и уточнить если газета удалила свои прошлые публикации и не исправила их, а просто 
+    //перестала писать о данном инциденте
   ],
 },
   },
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  hospital:       { label: 'Misattributed to Israel', color: '#ef4444', icon: '🏥' },
-  tunnel:         { label: 'Tunnel / Underground',    color: '#a78bfa', icon: '⛏' },
+  hospital:       { label: 'Misattributed to Israel', color: '#ffffffff', icon: '🏥' },
+  tunnel:         { label: 'Tunnel / Underground',    color: '#7f3e00ff', icon: '⛏' },
   weapons_depot:  { label: 'Weapons Depot',           color: '#f59e0b', icon: '💣' },
-  command_center: { label: 'Command Center',          color: '#06b6d4', icon: '🎯' },
-  rocket_launch:  { label: 'Rocket Launch Site',      color: '#22c55e', icon: '🚀' },
+  command_center: { label: 'Command Center',          color: '#ffea00ff', icon: '🎯' },
+  rocket_launch:  { label: 'Rocket Launch Site',      color: '#ff0000ff', icon: '🚀' },
 };
 
 export const ARENAS = [
-  { id: 'gaza', label: 'Gaza', locked: false, center: [31.50, 34.47] as [number,number], zoom: 12 },
+  { id: 'gaza', label: 'Gaza', locked: false, center: [31.70, 34.80] as [number,number], zoom: 9 },
   { id: 'lebanon',  label: 'Lebanon',   locked: true,  center: [33.88, 35.50] as [number, number], zoom: 10 },
   { id: 'westbank', label: 'West Bank', locked: true,  center: [31.90, 35.20] as [number, number], zoom: 10 },
   { id: 'syria',    label: 'Syria',     locked: true,  center: [33.50, 36.30] as [number, number], zoom: 9  },

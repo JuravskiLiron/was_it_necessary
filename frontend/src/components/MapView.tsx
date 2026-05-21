@@ -24,7 +24,7 @@ const STATUS_COLOR: Record<string, string> = {
 type MapStyle = 'dark' | 'satellite' | 'hybrid';
 
 const STYLES: { id: MapStyle; label: string; url: string }[] = [
-{ id: 'dark', label: '2D', url: `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${MAPTILER_KEY}` },
+  { id: 'dark', label: '2D', url: `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${MAPTILER_KEY}` },
   { id: 'satellite', label: 'SAT', url: `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
   { id: 'hybrid',    label: 'HYB', url: `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
 ];
@@ -133,6 +133,8 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     tileLayer.addTo(map);
     tileLayerRef.current = tileLayer;
     map.getContainer().classList.add('map-dark');
+
+    //
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     if (!isMobile) (map.getContainer() as HTMLElement).style.cursor = 'crosshair';
     mapRef.current = map;
@@ -145,7 +147,8 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
   }, []); // eslint-disable-line
 
   // Switch style — remove filter for satellite/hybrid
-  useEffect(() => {
+  // пока что не имеет значение так ка стиль убран в глобал ссс
+  /* useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const styleObj = STYLES.find(s => s.id === mapStyle)!;
@@ -158,7 +161,7 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     const container = map.getContainer();
     container.classList.remove('map-dark', 'map-satellite', 'map-hybrid');
     container.classList.add(`map-${mapStyle}`);
-  }, [mapStyle]);
+  }, [mapStyle]); */
 
   useEffect(() => {
     const map = mapRef.current;
@@ -217,15 +220,7 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
         ))}
       </div>
 
-      {/* Compass */}
-      <div style={{ position: 'absolute', top: 14, left: 14, zIndex: 500, pointerEvents: 'none' }}>
-        <svg width="34" height="34" viewBox="0 0 36 36">
-          <circle cx="18" cy="18" r="16" fill="rgba(10,10,10,.8)" stroke="rgba(255,255,255,.1)" strokeWidth=".8"/>
-          <polygon points="18,4 21,18 18,15 15,18" fill="#e53e3e"/>
-          <polygon points="18,32 21,18 18,21 15,18" fill="rgba(255,255,255,.25)"/>
-          <text x="18" y="10" textAnchor="middle" fill="#e53e3e" fontSize="6" fontFamily="JetBrains Mono" fontWeight="700">N</text>
-        </svg>
-      </div>
+      
 
       {/* Legend desktop */}
       {!isMobile && (
@@ -245,9 +240,12 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
 
       {/* Mobile hint */}
       {isMobile && (
+       
         <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 500, background: 'rgba(10,10,10,.88)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 20, padding: '6px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#555', letterSpacing: '.08em', pointerEvents: 'none', whiteSpace: 'nowrap', backdropFilter: 'blur(8px)' }}>
           TAP INCIDENT TO EXPLORE
         </div>
+   
+        
       )}
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)', animation: 'scanline 8s linear infinite', pointerEvents: 'none', zIndex: 400 }} />
