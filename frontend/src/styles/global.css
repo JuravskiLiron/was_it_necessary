@@ -19,7 +19,7 @@
   --amber: #d69e2e;
 
   --sidebar: 480px;
-  --ff:  'JetBrains Mono', monospace;
+  --ff:  'Inter', monospace;
   --ffs: 'Inter', sans-serif;
   --ease: cubic-bezier(.4,0,.2,1);
 }

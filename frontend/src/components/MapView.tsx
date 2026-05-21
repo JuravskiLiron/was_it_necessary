@@ -278,7 +278,20 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
       )}
 
       {isMobile && (
+                <>
+                <div style={{ position: 'absolute', top: 14, left: 14, zIndex: 500, background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 4, padding: '10px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, display: 'flex', flexDirection: 'column', gap: 7, backdropFilter: 'blur(8px)' }}>
+
+  {[{ color: '#ff4444', label: 'Misattributed' }, { color: '#b388ff', label: 'Tunnel' }, { color: '#d69e2e', label: 'Weapons' }, { color: '#4299e1', label: 'Command' }].map(item => (
+            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
+              <span style={{ color: '#555', letterSpacing: '.07em' }}>{item.label}</span>
+            </div>
+          ))}
+
+</div>
         <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, pointerEvents: 'none' }}>
+          
+     
           {activeRadius > 0 && (
             <div style={{ background: 'rgba(229,62,62,.2)', border: '1px solid rgba(229,62,62,.5)', borderRadius: 20, padding: '5px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#ff6b6b', letterSpacing: '.08em', whiteSpace: 'nowrap', fontWeight: 600 }}>
               ⚠ BLAST RADIUS · ~{activeRadius}m
@@ -288,6 +301,7 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
             TAP INCIDENT TO EXPLORE
           </div>
         </div>
+        </>
       )}
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)', animation: 'scanline 8s linear infinite', pointerEvents: 'none', zIndex: 400 }} />

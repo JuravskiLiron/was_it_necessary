@@ -15,7 +15,10 @@ export interface ClaimVsFact {
   factTime: string;
   factSource: string;
   fact: string;
-  verdict: 'false' | 'misleading' | 'unverified';
+  verdict: string;
+  claimUrl?: string;     // ← ссылка на оригинальный claim
+  factUrl?: string;      // ← ссылка на источник факта
+  archiveUrl?: string;   // ← archive.org если удалили
 }
 
 export interface CraterComparison {
@@ -90,6 +93,12 @@ export interface MediaOutlet {
   corrected: boolean;
   correctionDate?: string;
   correctionNote?: string;
+  sourceUrl?: string;        // ← ссылка на оригинальную статью
+  correctionUrl?: string;    // ← ссылка на исправление
+  deleted?: boolean;         // ← удалили статью без исправления
+  silent?: boolean;     
+  archiveUrl?: string;      // archive.org если удалили
+       // ← перестали писать без исправления
 }
 
 export interface MediaStats {
