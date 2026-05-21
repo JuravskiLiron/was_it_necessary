@@ -32,19 +32,17 @@ const STYLES: { id: MapStyle; label: string; url: string }[] = [
 function makeIcon(event: StrikeEvent, selected: boolean, isMobile: boolean): L.DivIcon {
   const cfg = CATEGORY_CONFIG[event.category] ?? { color: '#3b82f6' };
   const c = cfg.color;
-  const sc = STATUS_COLOR[event.verificationStatus] ?? c;
-  const s = isMobile ? (selected ? 18 : 14) : (selected ? 14 : 10);
-  const ring = isMobile ? (selected ? 36 : 28) : (selected ? 28 : 22);
+  //const sc = STATUS_COLOR[event.verificationStatus] ?? c;
+  const s = isMobile ? (selected ? 10 : 10) : (selected ? 14 : 10);
+  //const ring = isMobile ? (selected ? 36 : 28) : (selected ? 28 : 22);
   return L.divIcon({
     className: '',
-    iconSize: [ring, ring],
-    iconAnchor: [ring / 2, ring / 2],
-    popupAnchor: [0, -(ring / 2 + 8)],
+   // iconSize: [ring, ring],
+  //  iconAnchor: [ring / 2, ring / 2],
+  //  popupAnchor: [0, -(ring / 2 + 8)],
     html: `
-      <div style="position:relative;width:${ring}px;height:${ring}px;display:flex;align-items:center;justify-content:center">
         <div style="position:absolute;inset:0;border-radius:50%;border:1.5px solid ${c};opacity:.5;animation:mpulse 2.4s ease-out infinite;pointer-events:none"></div>
         <div style="width:${s}px;height:${s}px;border-radius:50%;background:${c};box-shadow:0 0 0 2px rgba(6,8,13,.9),0 0 8px ${c}80${selected ? ',0 0 0 3px #fff,0 0 14px '+c : ''};flex-shrink:0"></div>
-        <div style="position:absolute;top:1px;right:1px;width:${isMobile ? 8 : 6}px;height:${isMobile ? 8 : 6}px;border-radius:50%;background:${sc};border:1.5px solid rgba(6,8,13,.9)"></div>
       </div>`,
   });
 }
@@ -79,15 +77,86 @@ function syncMarkers(
     const marker = L.marker(event.coordinates as L.LatLngExpression, { icon: makeIcon(event, false, isMobile), zIndexOffset: 1000 });
 
     marker.bindPopup(`
-      <div style="padding:14px 15px;min-width:210px;font-family:'JetBrains Mono',monospace">
-        <div style="font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:#555;margin-bottom:5px">${cfg.label}</div>
-        <div style="font-size:15px;font-weight:600;color:#e8e8e8;margin-bottom:3px;font-family:'Inter',sans-serif;line-height:1.2">${event.title}</div>
-        <div style="font-size:9px;color:#444;margin-bottom:10px">${event.subtitle}</div>
-        <div style="display:inline-flex;padding:3px 9px;border-radius:3px;margin-bottom:12px;background:${sc}18;color:${sc};border:1px solid ${sc}30;font-size:8px;text-transform:uppercase;letter-spacing:.09em;font-weight:600">${slabel}</div>
-        <button onclick="window.__sel?.('${event.id}')" style="display:flex;align-items:center;justify-content:center;width:100%;padding:9px;background:${cfg.color};color:#fff;border:none;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;cursor:pointer;letter-spacing:.08em;text-transform:uppercase">
-          VIEW FULL BREAKDOWN →
-        </button>
-      </div>`, { maxWidth: 260, minWidth: 220 });
+      <div style="
+  padding:16px;
+  min-width:240px;
+  background:#171b22;
+  border:1px solid #2a313d;
+  border-radius:12px;
+  box-shadow:0 10px 35px rgba(0,0,0,.45);
+  backdrop-filter:blur(12px);
+  font-family:'Inter',sans-serif;
+">
+
+  <div style="
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    color:#7d8694;
+    margin-bottom:8px;
+    font-weight:600;
+  ">
+    ${cfg.label}
+  </div>
+
+  <div style="
+    font-size:16px;
+    font-weight:700;
+    color:#f3f5f7;
+    margin-bottom:6px;
+    line-height:1.3;
+  ">
+    ${event.title}
+  </div>
+
+  <div style="
+    font-size:12px;
+    color:#9aa4b2;
+    margin-bottom:14px;
+    line-height:1.45;
+  ">
+    ${event.subtitle}
+  </div>
+
+  <div style="
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 10px;
+    border-radius:999px;
+    margin-bottom:16px;
+    background:${sc}15;
+    color:${sc};
+    border:1px solid ${sc}35;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-weight:700;
+  ">
+    ● ${slabel}
+  </div>
+
+  <button
+    onclick="window.__sel?.('${event.id}')"
+    style="
+      width:100%;
+      padding:11px;
+      background:${cfg.color};
+      color:white;
+      border:none;
+      border-radius:8px;
+      font-size:11px;
+      font-weight:700;
+      cursor:pointer;
+      letter-spacing:.06em;
+      transition:.18s ease;
+      box-shadow:0 4px 18px ${cfg.color}55;
+    "
+  >
+    VIEW FULL BREAKDOWN
+  </button>
+
+</div>`, { maxWidth: 260, minWidth: 220 });
 
     marker.on('click', () => {
       drawBlastRef.current(event);
