@@ -128,7 +128,7 @@ body { font-family: var(--ffs); background: var(--bg0); color: var(--txt); -webk
   transition: width 260ms var(--ease);
   z-index: 100;
 }
-.sidebar.open { width: var(--sidebar); }
+/* .sidebar.open { width: var(--sidebar); } */ /* IGNORE */
 
 .sb-close {
   position: absolute;
