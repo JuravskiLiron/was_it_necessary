@@ -90,11 +90,10 @@ function syncMarkers(
       </div>`, { maxWidth: 260, minWidth: 220 });
 
     marker.on('click', () => {
-      // Всегда рисуем радиус сразу при клике
       drawBlastRef.current(event);
       if (isMobileRef.current) {
-        // На мобайле: показываем радиус 2 сек, потом sidebar
         marker.openPopup();
+        setTimeout(() => onSelectRef.current(event), 2000);
       } else {
         marker.openPopup();
         onSelectRef.current(event);
@@ -124,40 +123,40 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
   const isMobileRef = useRef(isMobile);
   const drawBlastRef = useRef((_e: StrikeEvent) => {});
   const [mapStyle, setMapStyle] = useState<MapStyle>('dark');
+  // Локальный state — обновляется сразу при клике, не ждёт sidebar
+  const [activeRadius, setActiveRadius] = useState<number>(0);
 
   eventsRef.current = events;
   onSelectRef.current = onSelect;
   selectedRef.current = selectedEvent;
   isMobileRef.current = isMobile;
 
-  // Определяем drawBlast через ref — доступен везде
   drawBlastRef.current = (event: StrikeEvent) => {
     const map = mapRef.current;
     if (!map) return;
 
-    // Убираем старый круг
     if (blastCircleRef.current) { blastCircleRef.current.remove(); blastCircleRef.current = null; }
 
     const ev = event as StrikeEvent & { blastRadius?: number; streetZoom?: number };
     const [lat, lng] = ev.coordinates;
     const zoom = ev.streetZoom ?? (isMobile ? 15 : 16);
 
-    // Zoom к месту
     map.flyTo([lat, isMobile ? lng : lng - 0.008], zoom, { duration: 1.2, easeLinearity: 0.2 });
 
-    // Flash
     const container = map.getContainer();
     const flash = document.createElement('div');
     flash.style.cssText = `position:absolute;inset:0;z-index:800;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(229,62,62,.25) 0%,transparent 65%);animation:mapflash .7s ease-out forwards;`;
     container.appendChild(flash);
     setTimeout(() => { if (flash.parentNode) flash.remove(); }, 750);
 
-    // Blast circle
-    const radius = ev.blastRadius;
-    if (radius && radius > 0) {
+    const radius = ev.blastRadius ?? 0;
+    // Обновляем локальный state сразу
+    setActiveRadius(radius);
+
+    if (radius > 0) {
       const circle = L.circle([lat, lng] as L.LatLngExpression, {
-        radius, color: '#e53e3e', fillColor: '#e53e3e',
-        fillOpacity: 0.06, weight: 1.5, dashArray: '5,4', opacity: 0,
+        radius, color: '#ff4444', fillColor: '#ff4444',
+        fillOpacity: 0.15, weight: 2.5, dashArray: '6,3', opacity: 0,
       });
       circle.addTo(map);
       blastCircleRef.current = circle;
@@ -236,14 +235,13 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     syncMarkers(map, events, selectedEvent, markersRef.current, isMobile, isMobileRef, onSelectRef, drawBlastRef);
   }, [events, selectedEvent, onSelect, isMobile]);
 
-  // На десктопе радиус также обновляется при смене selectedEvent
   useEffect(() => {
     if (!isMobile && selectedEvent) {
       drawBlastRef.current(selectedEvent);
     }
-    if (!selectedEvent && blastCircleRef.current) {
-      blastCircleRef.current.remove();
-      blastCircleRef.current = null;
+    if (!selectedEvent) {
+      if (blastCircleRef.current) { blastCircleRef.current.remove(); blastCircleRef.current = null; }
+      setActiveRadius(0);
     }
   }, [selectedEvent, isMobile]);
 
@@ -265,22 +263,31 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
 
       {!isMobile && (
         <div style={{ position: 'absolute', bottom: 14, left: 14, zIndex: 500, background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 4, padding: '10px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, display: 'flex', flexDirection: 'column', gap: 7, backdropFilter: 'blur(8px)' }}>
-          {[{ color: '#e53e3e', label: 'Misattributed' }, { color: '#b388ff', label: 'Tunnel' }, { color: '#d69e2e', label: 'Weapons' }, { color: '#4299e1', label: 'Command' }].map(item => (
+          {[{ color: '#ff4444', label: 'Misattributed' }, { color: '#b388ff', label: 'Tunnel' }, { color: '#d69e2e', label: 'Weapons' }, { color: '#4299e1', label: 'Command' }].map(item => (
             <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 7, height: 7, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
               <span style={{ color: '#555', letterSpacing: '.07em' }}>{item.label}</span>
             </div>
           ))}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,.06)', paddingTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 10, height: 6, border: '1px dashed #e53e3e', opacity: .6, borderRadius: 1, flexShrink: 0 }} />
-            <span style={{ color: '#444', letterSpacing: '.07em' }}>Blast radius</span>
-          </div>
+          {activeRadius > 0 && (
+            <div style={{ borderTop: '1px solid rgba(255,255,255,.06)', paddingTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 10, height: 6, border: '1px dashed #ff4444', opacity: .7, borderRadius: 1, flexShrink: 0 }} />
+              <span style={{ color: '#ff6b6b', letterSpacing: '.07em' }}>Blast ~{activeRadius}m</span>
+            </div>
+          )}
         </div>
       )}
 
       {isMobile && (
-        <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 500, background: 'rgba(10,10,10,.88)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 20, padding: '6px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#555', letterSpacing: '.08em', pointerEvents: 'none', whiteSpace: 'nowrap', backdropFilter: 'blur(8px)' }}>
-          TAP INCIDENT TO EXPLORE
+        <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, pointerEvents: 'none' }}>
+          {activeRadius > 0 && (
+            <div style={{ background: 'rgba(229,62,62,.2)', border: '1px solid rgba(229,62,62,.5)', borderRadius: 20, padding: '5px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#ff6b6b', letterSpacing: '.08em', whiteSpace: 'nowrap', fontWeight: 600 }}>
+              ⚠ BLAST RADIUS · ~{activeRadius}m
+            </div>
+          )}
+          <div style={{ background: 'rgba(10,10,10,.88)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 20, padding: '6px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#555', letterSpacing: '.08em', whiteSpace: 'nowrap', backdropFilter: 'blur(8px)' }}>
+            TAP INCIDENT TO EXPLORE
+          </div>
         </div>
       )}
 
