@@ -17,7 +17,9 @@
   --green: #38a169;
   --blue:  #4299e1;
   --amber: #d69e2e;
-  /*--accent: #6ea8fe; --><!-- IGNORE -- */
+  
+  --accent: #6ea8fe; 
+
   --sidebar: 480px;
   --ff:  'Inter', monospace;
   --ffs: 'Inter', sans-serif;

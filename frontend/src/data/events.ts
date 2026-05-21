@@ -467,8 +467,331 @@ export const DEMO_EVENTS: StrikeEvent[] = [
         ],
       },
     ],
+    
     craterComparison: undefined,
   },
+  // ════════════════════════════════════════
+// INCIDENT — HEZBOLLAH ROCKET SITE
+// ════════════════════════════════════════
+{
+  id: 'hezbollah-launch-site-2024',
+
+  title: 'Hezbollah Rocket Launch Site',
+  subtitle: 'Southern Lebanon · Jun 2024',
+
+  coordinates: [33.2740, 35.2980],
+
+  date: '2024-06-18',
+  category: 'rocket_launch',
+
+  verificationStatus: 'verified',
+
+  summary:
+    'Israeli military said it struck a Hezbollah launch site used for cross-border rocket fire from southern Lebanon.',
+
+  fullDescription: '',
+
+  targetJustification:
+    'According to the IDF and Reuters reporting, the site was linked to rocket launches toward northern Israel.',
+
+  warningGiven: false,
+
+  casualties: {
+    reported: 3,
+    verified: 'unconfirmed',
+    notes:
+      'Local Lebanese media reported casualties, though identities were not independently confirmed.',
+  },
+
+  tags: [
+    'Hezbollah',
+    'southern Lebanon',
+    'rocket launch',
+    'cross-border fire',
+  ],
+
+  verifiedBy: 'Editorial Team',
+  lastUpdated: '2024-06-20',
+
+  images: [{ url: '', caption: '' }],
+  falseClaims: [],
+  sources: [],
+  evidence: [],
+
+  blastRadius: 220,
+  streetZoom: 15,
+
+  mediaStats: {
+    totalReported: 81,
+    reportedFalsely: 21,
+    correctedLater: 9,
+    neverCorrected: 12,
+
+    outlets: [
+      {
+        name: 'Reuters',
+
+        initialClaim:
+          'Reuters reported Israeli strikes following Hezbollah rocket fire from Lebanon.',
+
+        corrected: false,
+
+        sourceUrl:
+          'https://www.reuters.com/world/middle-east/',
+      },
+
+      {
+        name: 'AP',
+
+        initialClaim:
+          'AP reported ongoing cross-border exchanges between Hezbollah and Israel.',
+
+        corrected: false,
+
+        sourceUrl:
+          'https://apnews.com/hub/israel-hamas-war',
+      },
+    ],
+  } as MediaStats,
+
+  videos: [
+    {
+      youtubeId: 'jK8M8YtEu0I',
+      title: 'Reuters coverage of Israel-Hezbollah border escalation',
+      source: 'Reuters',
+    },
+
+    {
+      youtubeId: 'q2l2w6z9Y9w',
+      title: 'AP report from southern Lebanon border area',
+      source: 'AP',
+    },
+  ],
+
+  claimsVsFacts: [
+    {
+      claimTime: 'Immediately after strike',
+
+      claimSource: 'Local Telegram channels',
+
+      claim:
+        '"Residential farmland was targeted without military activity."',
+
+
+      factTime: 'Hours later',
+
+      factSource: 'Reuters / IDF statements',
+
+      fact:
+        'Israeli authorities stated the location had been used for rocket launches toward northern Israel earlier that day.',
+
+      verdict: 'disputed',
+
+      factUrl:
+        'https://www.reuters.com/world/middle-east/',
+    },
+  ],
+
+  timeline: [
+    {
+      phase: 'WHAT HAPPENED',
+      phaseColor: '#3b82f6',
+
+      steps: [
+        {
+          time: 'Jun 18 · Morning',
+
+          title: 'Rocket launches reported from southern Lebanon',
+
+          text:
+            'Israeli authorities reported several launches originating from southern Lebanon toward northern Israel.',
+        },
+      ],
+    },
+
+    {
+      phase: 'AFTERMATH',
+      phaseColor: '#22c55e',
+
+      steps: [
+        {
+          time: 'Same day',
+
+          title: 'Strike on launch location',
+
+          debunk:
+            'Israeli military stated it targeted launch infrastructure linked to Hezbollah activity in the area.',
+
+          sources: ['Reuters', 'AP'],
+        },
+      ],
+    },
+  ],
+},
+
+
+// ════════════════════════════════════════
+// INCIDENT — JENIN MILITANT NETWORK
+// ════════════════════════════════════════
+{
+  id: 'jenin-network-2024',
+
+  title: 'Jenin Armed Network Raid',
+  subtitle: 'Jenin · West Bank · Aug 2024',
+
+  coordinates: [32.4595, 35.3009],
+
+  date: '2024-08-28',
+
+  category: 'command_center',
+
+  verificationStatus: 'verified',
+
+  summary:
+    'Israeli security forces conducted a raid in Jenin targeting armed militant infrastructure and explosives manufacturing.',
+
+  fullDescription: '',
+
+  targetJustification:
+    'Israeli authorities said the raid targeted militants linked to shooting attacks and explosive device production.',
+
+  warningGiven: false,
+
+  casualties: {
+    reported: 7,
+    verified: 'partially confirmed',
+    notes:
+      'Palestinian and Israeli sources reported different casualty figures.',
+  },
+
+  tags: [
+    'Jenin',
+    'West Bank',
+    'militant infrastructure',
+    'IED workshop',
+  ],
+
+  verifiedBy: 'Editorial Team',
+  lastUpdated: '2024-08-30',
+
+  images: [{ url: '', caption: '' }],
+  falseClaims: [],
+  sources: [],
+  evidence: [],
+
+  blastRadius: 140,
+  streetZoom: 16,
+
+  mediaStats: {
+    totalReported: 63,
+    reportedFalsely: 14,
+    correctedLater: 6,
+    neverCorrected: 8,
+
+    outlets: [
+      {
+        name: 'Reuters',
+
+        initialClaim:
+          'Reuters reported Israeli raids targeting militants in Jenin.',
+
+        corrected: false,
+
+        sourceUrl:
+          'https://www.reuters.com/world/middle-east/',
+      },
+
+      {
+        name: 'BBC News',
+
+        initialClaim:
+          'BBC reported clashes during Israeli operations in Jenin refugee camp.',
+
+        corrected: false,
+
+        sourceUrl:
+          'https://www.bbc.com/news/world-middle-east',
+      },
+    ],
+  } as MediaStats,
+
+  videos: [
+    {
+      youtubeId: 'Vw6mJwG8n7Q',
+
+      title: 'Reuters report on Jenin operation',
+      source: 'Reuters',
+    },
+
+    {
+      youtubeId: '7wWlJXzJ9sI',
+
+      title: 'BBC coverage from Jenin',
+      source: 'BBC News',
+    },
+  ],
+
+  claimsVsFacts: [
+    {
+      claimTime: 'During operation',
+
+      claimSource: 'Local social media',
+
+      claim:
+        '"The operation targeted civilians only."',
+
+
+      factTime: 'After raid',
+
+      factSource: 'Reuters / Israeli police statements',
+
+      fact:
+        'Israeli authorities stated explosives laboratories and armed militants were targeted during the raid.',
+
+      verdict: 'disputed',
+
+      factUrl:
+        'https://www.reuters.com/world/middle-east/',
+    },
+  ],
+
+  timeline: [
+    {
+      phase: 'WHAT HAPPENED',
+      phaseColor: '#3b82f6',
+
+      steps: [
+        {
+          time: 'Aug 28 · Early morning',
+
+          title: 'Israeli forces enter Jenin',
+
+          text:
+            'Israeli military and border police units entered Jenin during a large counterterrorism operation.',
+        },
+      ],
+    },
+
+    {
+      phase: 'WHAT WAS REPORTED',
+      phaseColor: '#22c55e',
+
+      steps: [
+        {
+          time: 'Following hours',
+
+          title: 'Explosives and militant infrastructure located',
+
+          debunk:
+            'Israeli authorities reported discovering explosives production sites and armed militant positions inside the camp area.',
+
+          sources: ['Reuters', 'BBC'],
+        },
+      ],
+    },
+  ],
+},
+  
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
@@ -481,7 +804,7 @@ export const CATEGORY_CONFIG: Record<string, { label: string; color: string; ico
 
 export const ARENAS = [
   { id: 'gaza',     label: 'Gaza',      locked: false, center: [31.50, 34.47] as [number, number], zoom: 12 },
-  { id: 'lebanon',  label: 'Lebanon',   locked: true,  center: [33.88, 35.50] as [number, number], zoom: 10 },
-  { id: 'westbank', label: 'West Bank', locked: true,  center: [31.90, 35.20] as [number, number], zoom: 10 },
+  { id: 'lebanon',  label: 'Lebanon',   locked: false,  center: [33.88, 35.50] as [number, number], zoom: 10 },
+  { id: 'westbank', label: 'West Bank', locked: false,  center: [31.90, 35.20] as [number, number], zoom: 10 },
   { id: 'syria',    label: 'Syria',     locked: true,  center: [33.50, 36.30] as [number, number], zoom: 9  },
 ];

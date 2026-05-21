@@ -16,9 +16,9 @@ export interface ClaimVsFact {
   factSource: string;
   fact: string;
   verdict: string;
-  claimUrl?: string;     // ← ссылка на оригинальный claim
-  factUrl?: string;      // ← ссылка на источник факта
-  archiveUrl?: string;   // ← archive.org если удалили
+  claimUrl?: string;    
+  factUrl?: string;     
+  archiveUrl?: string;   
 }
 
 export interface CraterComparison {
