@@ -3,6 +3,7 @@ import { MapView } from './components/MapView';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { StrikeEvent } from './types';
+import { Landing } from './components/Landing';
 import { DEMO_EVENTS, ARENAS } from './data/events';
 import './styles/global.css';
 
@@ -20,12 +21,14 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState<StrikeEvent | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeArena, setActiveArena] = useState('israel');
+  const [showLanding, setShowLanding] = useState(true);
+
   const [search, setSearch] = useState('');
   const isMobile = useIsMobile();
 
   const arenaEvents = DEMO_EVENTS.filter(e => {
-    if (activeArena === 'gaza') return e.coordinates[0] < 32.5 && e.coordinates[0] > 31;
-    if (activeArena === 'lebanon') return e.coordinates[0] > 33;
+    //if (activeArena === 'gaza') return e.coordinates[0] < 32.5 && e.coordinates[0] > 31;
+    //if (activeArena === 'lebanon') return e.coordinates[0] > 33;
     
     return true;
   }).filter(e =>
@@ -47,6 +50,8 @@ export default function App() {
   const currentArena = ARENAS.find(a => a.id === activeArena)!;
 
   return (
+    <>
+    {showLanding && <Landing onEnter={() => setShowLanding(false)} />}
     <div className="app">
       <Header search={search} onSearch={setSearch} total={DEMO_EVENTS.length} />
 
@@ -87,5 +92,6 @@ export default function App() {
         <Sidebar event={selectedEvent} isOpen={sidebarOpen} onClose={handleClose} />
       </div>
     </div>
+    </>
   );
 }

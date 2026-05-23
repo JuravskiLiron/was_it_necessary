@@ -21,360 +21,232 @@ const STATUS_COLOR: Record<string, string> = {
   debunked: '#ef4444',
 };
 
-type MapStyle = 'dark' | 'satellite' | 'hybrid';
+type MapStyle = '2d' | 'satellite' | 'hybrid';
 
 const STYLES: { id: MapStyle; label: string; url: string }[] = [
-  { id: 'dark',      label: '2D',  url: `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${MAPTILER_KEY}` },
+  { id: '2d', label: '2D', url: `https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
   { id: 'satellite', label: 'SAT', url: `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
-  { id: 'hybrid',    label: 'HYB', url: `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
+  { id: 'hybrid', label: 'HYB', url: `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
 ];
 
-function makeIcon(event: StrikeEvent, selected: boolean, isMobile: boolean): L.DivIcon {
-  const cfg = CATEGORY_CONFIG[event.category] ?? { color: '#3b82f6' };
-  const c = cfg.color;
-  //const sc = STATUS_COLOR[event.verificationStatus] ?? c;
-  const s = isMobile ? (selected ? 10 : 10) : (selected ? 14 : 10);
-  //const ring = isMobile ? (selected ? 36 : 28) : (selected ? 28 : 22);
-  return L.divIcon({
-    className: '',
-   // iconSize: [ring, ring],
-  //  iconAnchor: [ring / 2, ring / 2],
-  //  popupAnchor: [0, -(ring / 2 + 8)],
-    html: `
-        <div style="position:absolute;inset:0;border-radius:50%;border:1.5px solid ${c};opacity:.5;animation:mpulse 2.4s ease-out infinite;pointer-events:none"></div>
-        <div style="width:${s}px;height:${s}px;border-radius:50%;background:${c};box-shadow:0 0 0 2px rgba(6,8,13,.9),0 0 8px ${c}80${selected ? ',0 0 0 3px #fff,0 0 14px '+c : ''};flex-shrink:0"></div>
-      </div>`,
-  });
-}
+const BUILDING_DATA: Record<string, {
+  popupCoords: [number, number];
+  target: { bounds: [[number,number],[number,number]]; label: string };
+  context: { bounds: [[number,number],[number,number]]; label: string; icon: string }[];
+}> = {
+  'al-ahli-hospital-2023': {
+    popupCoords: [31.503962, 34.466689],
+    target: { bounds: [[31.503875,34.466561],[31.504042,34.466796]], label: 'IMPACT SITE' },
+    context: [{ bounds: [[31.50368,34.46628],[31.50423,34.46706]], label: 'HOSPITAL COMPLEX', icon: '🏥' }],
+  },
+  'shifa-tunnel-2023': {
+    popupCoords: [31.521393, 34.443954],
+    target: { bounds: [[31.524210,34.443113],[31.523698,34.443789]], label: 'HAMAS UNDERGROUND COMPLEX' },
+    context: [{ bounds: [[31.525597,34.441884],[31.522599,34.445165]], label: 'HOSPITAL AND RESIDENTIAL AREA', icon: '' }],
+  },
+  'khan-yunis-weapons-2024': {
+    popupCoords: [31.346081, 34.303901],
+    target: { bounds: [[31.345982,34.303772],[31.346173,34.304033]], label: 'WEAPONS STORAGE' },
+    context: [{ bounds: [[31.34572,34.3035],[31.34642,34.30428]], label: 'RESIDENTIAL AREA', icon: '🏘' }],
+  },
+  'hezbollah-launch-site-2024': {
+    popupCoords: [33.273882, 35.297624],
+    target: { bounds: [[33.273792,35.297518],[33.273973,35.297742]], label: 'ROCKET POSITION' },
+    context: [{ bounds: [[33.27342,35.29712],[33.27432,35.29802]], label: 'OPEN FIELD', icon: '🌾' }],
+  },
+  'jenin-network-2024': {
+    popupCoords: [32.459196, 35.301482],
+    target: { bounds: [[32.459108,35.30136],[32.459292,35.301606]], label: 'COMMAND NODE' },
+    context: [{ bounds: [[32.45876,35.30102],[32.45962,35.30192]], label: 'URBAN BLOCK', icon: '🏘' }],
+  },
+};
 
-function syncMarkers(
-  map: L.Map,
-  events: StrikeEvent[],
-  selectedEvent: StrikeEvent | null,
-  markers: Map<string, L.Marker>,
-  isMobile: boolean,
-  isMobileRef: { current: boolean },
-  onSelectRef: { current: (e: StrikeEvent) => void },
-  drawBlastRef: { current: (e: StrikeEvent) => void },
-) {
-  markers.forEach((m, id) => {
-    if (!events.find(e => e.id === id)) { m.remove(); markers.delete(id); }
-  });
-
-  events.forEach(event => {
-    const isSel = selectedEvent?.id === event.id;
-    const existing = markers.get(event.id);
-    if (existing) {
-      existing.setIcon(makeIcon(event, isSel, isMobile));
-      existing.setZIndexOffset(isSel ? 2000 : 1000);
-      return;
-    }
-
-    const cfg = CATEGORY_CONFIG[event.category] ?? { label: '', color: '#3b82f6' };
-    const sc = STATUS_COLOR[event.verificationStatus] ?? '#3b82f6';
-    const slabel = { verified: '✓ VERIFIED', disputed: '⚠ DISPUTED', debunked: '✗ FALSE ATTRIBUTION' }[event.verificationStatus] ?? '';
-
-    const marker = L.marker(event.coordinates as L.LatLngExpression, { icon: makeIcon(event, false, isMobile), zIndexOffset: 1000 });
-
-    marker.bindPopup(`
-      <div style="
-  padding:16px;
-  min-width:240px;
-  background:#171b22;
-  border:1px solid #2a313d;
-  border-radius:12px;
-  box-shadow:0 10px 35px rgba(0,0,0,.45);
-  backdrop-filter:blur(12px);
-  font-family:'Inter',sans-serif;
-">
-
-  <div style="
-    font-size:10px;
-    text-transform:uppercase;
-    letter-spacing:.14em;
-    color:#7d8694;
-    margin-bottom:8px;
-    font-weight:600;
-  ">
-    ${cfg.label}
-  </div>
-
-  <div style="
-    font-size:16px;
-    font-weight:700;
-    color:#f3f5f7;
-    margin-bottom:6px;
-    line-height:1.3;
-  ">
-    ${event.title}
-  </div>
-
-  <div style="
-    font-size:12px;
-    color:#9aa4b2;
-    margin-bottom:14px;
-    line-height:1.45;
-  ">
-    ${event.subtitle}
-  </div>
-
-  <div style="
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:5px 10px;
-    border-radius:999px;
-    margin-bottom:16px;
-    background:${sc}15;
-    color:${sc};
-    border:1px solid ${sc}35;
-    font-size:10px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    font-weight:700;
-  ">
-    ● ${slabel}
-  </div>
-
-  <button
-    onclick="window.__sel?.('${event.id}')"
-    style="
-      width:100%;
-      padding:11px;
-      background:${cfg.color};
-      color:white;
-      border:none;
-      border-radius:8px;
-      font-size:11px;
-      font-weight:700;
-      cursor:pointer;
-      letter-spacing:.06em;
-      transition:.18s ease;
-      box-shadow:0 4px 18px ${cfg.color}55;
-    "
-  >
-    VIEW FULL BREAKDOWN
-  </button>
-
-</div>`, { maxWidth: 260, minWidth: 220 });
-
-    marker.on('click', () => {
-      drawBlastRef.current(event);
-      if (isMobileRef.current) {
-        marker.openPopup();
-      } else {
-        marker.openPopup();
-        onSelectRef.current(event);
-      }
-    });
-
-    marker.addTo(map);
-    markers.set(event.id, marker);
-  });
-
-  (window as any).__sel = (id: string) => {
-    const e = events.find(x => x.id === id);
-    if (e) onSelectRef.current(e);
-  };
+function makeInvisibleIcon(): L.DivIcon {
+  return L.divIcon({ className: '', iconSize: [1,1], iconAnchor: [0,0], html: '' });
 }
 
 export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoom, isMobile = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
+  const buildingLayersRef = useRef<L.Layer[]>([]);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
-  const blastCircleRef = useRef<L.Circle | null>(null);
-  const prevArenaRef = useRef('');
-  const eventsRef = useRef(events);
   const onSelectRef = useRef(onSelect);
-  const selectedRef = useRef(selectedEvent);
-  const isMobileRef = useRef(isMobile);
-  const drawBlastRef = useRef((_e: StrikeEvent) => {});
-  const [mapStyle, setMapStyle] = useState<MapStyle>('dark');
-  // Локальный state — обновляется сразу при клике, не ждёт sidebar
-  const [activeRadius, setActiveRadius] = useState<number>(0);
-
-  eventsRef.current = events;
-  onSelectRef.current = onSelect;
-  selectedRef.current = selectedEvent;
-  isMobileRef.current = isMobile;
-
-  drawBlastRef.current = (event: StrikeEvent) => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    if (blastCircleRef.current) { blastCircleRef.current.remove(); blastCircleRef.current = null; }
-
-    const ev = event as StrikeEvent & { blastRadius?: number; streetZoom?: number };
-    const [lat, lng] = ev.coordinates;
-    const zoom = ev.streetZoom ?? (isMobile ? 15 : 16);
-
-    map.flyTo([lat, isMobile ? lng : lng - 0.008], zoom, { duration: 1.2, easeLinearity: 0.2 });
-
-    const container = map.getContainer();
-    const flash = document.createElement('div');
-    flash.style.cssText = `position:absolute;inset:0;z-index:800;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(229,62,62,.25) 0%,transparent 65%);animation:mapflash .7s ease-out forwards;`;
-    container.appendChild(flash);
-    setTimeout(() => { if (flash.parentNode) flash.remove(); }, 750);
-
-    const radius = ev.blastRadius ?? 0;
-    // Обновляем локальный state сразу
-    setActiveRadius(radius);
-
-    if (radius > 0) {
-      const circle = L.circle([lat, lng] as L.LatLngExpression, {
-        radius, color: '#ff4444', fillColor: '#ff4444',
-        fillOpacity: 0.15, weight: 2.5, dashArray: '6,3', opacity: 0,
-      });
-      circle.addTo(map);
-      blastCircleRef.current = circle;
-      let op = 0;
-      const timer = setInterval(() => {
-        op = Math.min(op + 0.04, 0.5);
-        circle.setStyle({ opacity: op });
-        if (op >= 0.5) clearInterval(timer);
-      }, 16);
-      circle.bindTooltip(
-        `<div style="font-size:9px;color:#e53e3e;font-weight:600;letter-spacing:.08em">BLAST RADIUS · ~${radius}m</div>`,
-        { sticky: true, opacity: 1, className: 'blast-tip' }
-      );
-    }
-  };
+  useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
+  const [mapStyle, setMapStyle] = useState<MapStyle>('2d');
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     const style = document.createElement('style');
     style.textContent = `
-      @keyframes mpulse{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.8);opacity:0}}
-      @keyframes mapflash{0%{opacity:.5}100%{opacity:0}}
+      @keyframes mpulse{ 0%{transform:scale(.5);opacity:.8} 100%{transform:scale(1.8);opacity:0} }
       .leaflet-control-zoom{border:1px solid rgba(255,255,255,.1)!important;border-radius:3px!important}
       .leaflet-control-zoom a{background:#181818!important;color:#666!important;border-color:#333!important;width:28px!important;height:28px!important;line-height:28px!important}
       .leaflet-control-zoom a:hover{background:#222!important;color:#e8e8e8!important}
-      .leaflet-popup-content-wrapper{background:#181818!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:6px!important;box-shadow:0 8px 24px rgba(0,0,0,.7)!important}
+      .leaflet-popup-content-wrapper{background:#181818!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:8px!important;box-shadow:0 8px 24px rgba(0,0,0,.7)!important}
       .leaflet-popup-tip{background:#181818!important}
       .leaflet-popup-content{margin:0!important}
-      .leaflet-popup-close-button{color:#666!important;top:8px!important;right:8px!important;font-size:16px!important}
-      .blast-tip{background:#111!important;border:1px solid rgba(229,62,62,.3)!important;border-radius:4px!important;padding:6px 10px!important;box-shadow:none!important;font-family:'JetBrains Mono',monospace}
-      .blast-tip::before{display:none!important}
     `;
     document.head.appendChild(style);
     const map = L.map(containerRef.current, { center: arenaCenter, zoom: arenaZoom, zoomControl: false, attributionControl: false });
     const tileLayer = L.tileLayer(STYLES[0].url, { maxZoom: 20 });
     tileLayer.addTo(map);
     tileLayerRef.current = tileLayer;
-    map.getContainer().classList.add('map-dark');
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-    if (!isMobile) (map.getContainer() as HTMLElement).style.cursor = 'crosshair';
     mapRef.current = map;
-    map.whenReady(() => {
-      setTimeout(() => {
-        syncMarkers(map, eventsRef.current, selectedRef.current, markersRef.current, isMobileRef.current, isMobileRef, onSelectRef, drawBlastRef);
-      }, 100);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // ТОЛЬКО ЭТО ИСПРАВЛЕНО — зумend логика
+    map.on('zoomend', () => {
+      const z = map.getZoom();
+      buildingLayersRef.current.forEach((l: any) => {
+        const el = (l as L.Marker).getElement?.();
+        if (!el) return;
+        if (l._isLabel) el.style.display = z >= 15 ? '' : 'none';
+        if (l._isDot)   el.style.display = z >= 15 ? 'none' : '';
+      });
     });
-    return () => { map.remove(); mapRef.current = null; markersRef.current.clear(); };
-  }, []); // eslint-disable-line
+
+    return () => { map.remove(); mapRef.current = null; };
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    const styleObj = STYLES.find(s => s.id === mapStyle)!;
     if (tileLayerRef.current) map.removeLayer(tileLayerRef.current);
-    const newLayer = L.tileLayer(styleObj.url, { maxZoom: 20 });
-    newLayer.addTo(map);
-    markersRef.current.forEach(m => m.addTo(map));
-    tileLayerRef.current = newLayer;
-    const container = map.getContainer();
-    container.classList.remove('map-dark', 'map-satellite', 'map-hybrid');
-    container.classList.add(`map-${mapStyle}`);
+    const styleObj = STYLES.find(s => s.id === mapStyle)!;
+    const layer = L.tileLayer(styleObj.url, { maxZoom: 20 });
+    layer.addTo(map);
+    tileLayerRef.current = layer;
   }, [mapStyle]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    const key = `${arenaCenter[0]},${arenaCenter[1]},${arenaZoom}`;
-    if (key === prevArenaRef.current) return;
-    prevArenaRef.current = key;
-    map.flyTo(arenaCenter, arenaZoom, { duration: 1.4, easeLinearity: 0.25 });
+    map.flyTo(arenaCenter, arenaZoom, { duration: 1.2 });
   }, [arenaCenter, arenaZoom]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    syncMarkers(map, events, selectedEvent, markersRef.current, isMobile, isMobileRef, onSelectRef, drawBlastRef);
-  }, [events, selectedEvent, onSelect, isMobile]);
+    markersRef.current.forEach(m => m.remove());
+    buildingLayersRef.current.forEach(l => l.remove());
+    markersRef.current.clear();
+    buildingLayersRef.current = [];
 
-  useEffect(() => {
-    if (!isMobile && selectedEvent) {
-      drawBlastRef.current(selectedEvent);
-    }
-    if (!selectedEvent) {
-      if (blastCircleRef.current) { blastCircleRef.current.remove(); blastCircleRef.current = null; }
-      setActiveRadius(0);
-    }
-  }, [selectedEvent, isMobile]);
+    events.forEach(event => {
+      const cfg = CATEGORY_CONFIG[event.category] ?? { label: '', color: '#ff3333' };
+      const sc = STATUS_COLOR[event.verificationStatus] ?? '#22c55e';
+      const data = BUILDING_DATA[event.id];
+      if (!data) return;
+
+      // ТОЧКА — твой оригинальный код, не тронут
+      const dotIcon = L.divIcon({
+        className: '',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        html: `<div style="position:relative;width:28px;height:28px;display:flex;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;"></div>
+    <div style="width:10px;height:10px;border-radius:50%;background:${cfg.color};box-shadow:0 0 0 2px rgba(0,0,0,.9),0 0 10px ${cfg.color};"></div>
+  </div>`,
+      });
+      const dotCenter = L.latLngBounds(data.target.bounds).getCenter();
+      const dot = L.marker(dotCenter, { icon: dotIcon, zIndexOffset: 500 });
+      dot.addTo(map);
+      (dot as any)._isDot = true;
+dot.on('click', () => {
+  map.flyTo(dotCenter, 16, { duration: 1.2 });
+  
+});      buildingLayersRef.current.push(dot);
+
+      // Context rectangles
+      data.context.forEach(ctx => {
+        const rect = L.rectangle(ctx.bounds, {
+          color: 'rgba(255,255,255,0.92)', fillColor: 'rgba(255,255,255,0.02)',
+          fillOpacity: 1, weight: 1.5, interactive: false,
+        });
+        rect.addTo(map);
+        buildingLayersRef.current.push(rect);
+
+        if (!ctx.label) return;
+        const topLeft = L.latLngBounds(ctx.bounds).getNorthWest();
+        const label = L.divIcon({
+          className: '', iconSize: [0,0], iconAnchor: [0,20],
+          html: `<div style="padding:3px 7px;font-family:'JetBrains Mono',monospace;font-size:9px;white-space:nowrap;letter-spacing:.05em;">${ctx.label}</div>`,
+        });
+        const lm = L.marker(topLeft, { icon: label, interactive: false });
+        lm.addTo(map);
+        (lm as any)._isLabel = true;
+        requestAnimationFrame(() => { const e = lm.getElement?.(); if (e) e.style.display = 'none'; });
+        buildingLayersRef.current.push(lm);
+      });
+
+      // Target rectangle
+      const targetRect = L.rectangle(data.target.bounds, {
+        color: '#ff3b30', fillColor: '#ff3b30', fillOpacity: 0.22, weight: 1.8, opacity: 0.95,
+      });
+      targetRect.addTo(map);
+      buildingLayersRef.current.push(targetRect);
+
+      // Target label
+      const targetTopLeft = L.latLngBounds(data.target.bounds).getNorthWest();
+      const targetLabel = L.divIcon({
+        className: '', iconSize: [0,0], iconAnchor: [0,20],
+        html: `<div style="padding:3px 7px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#ff3b30;white-space:nowrap;letter-spacing:.08em;">${data.target.label}</div>`,
+      });
+      const tl = L.marker(targetTopLeft, { icon: targetLabel, interactive: false, zIndexOffset: 1000 });
+      tl.addTo(map);
+      (tl as any)._isLabel = true;
+      requestAnimationFrame(() => { const e = tl.getElement?.(); if (e) e.style.display = 'none'; });
+      buildingLayersRef.current.push(tl);
+
+      // Invisible marker for popup
+      const marker = L.marker(data.popupCoords, { icon: makeInvisibleIcon() });
+      marker.bindPopup(`
+        <div style="padding:16px;min-width:240px;background:#171b22;border:1px solid #2a313d;border-radius:12px;box-shadow:0 10px 35px rgba(0,0,0,.45);font-family:'Inter',sans-serif;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#7d8694;margin-bottom:8px;font-weight:600;">${cfg.label}</div>
+          <div style="font-size:16px;font-weight:700;color:#f3f5f7;margin-bottom:6px;">${event.title}</div>
+          <div style="font-size:12px;color:#9aa4b2;margin-bottom:14px;line-height:1.45;">${event.subtitle}</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;margin-bottom:16px;background:${sc}15;color:${sc};border:1px solid ${sc}35;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;">● ${event.verificationStatus}</div>
+          <button onclick="window.__sel?.('${event.id}')" style="width:100%;padding:11px;background:${cfg.color};color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.06em;">VIEW FULL BREAKDOWN</button>
+        </div>
+      `);
+      marker.addTo(map);
+      markersRef.current.set(event.id, marker);
+
+      targetRect.on('click', () => { marker.openPopup(); });
+    });
+
+    (window as any).__sel = (id: string) => {
+      const ev = events.find(x => x.id === id);
+      if (ev) onSelectRef.current(ev);
+    };
+  }, [events, selectedEvent, isMobile]);
 
   return (
-    <div className="map-wrap" style={{ position: 'relative' }}>
+    <div className="map-wrap" style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-
+      <div style={{
+  position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+  zIndex: 500, pointerEvents: 'none',
+  background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.1)',
+  borderRadius: 20, padding: '7px 16px',
+  fontFamily: 'JetBrains Mono, monospace', fontSize: 10,
+  color: 'rgba(255,255,255,.45)', letterSpacing: '.08em', whiteSpace: 'nowrap',
+  backdropFilter: 'blur(8px)',
+}}>
+  TAP DOT · TAP RED SQUARE TO EXPLORE
+</div>
       <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 500, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {STYLES.map(s => (
-          <button key={s.id} onClick={() => setMapStyle(s.id)} style={{
-            padding: '5px 10px', border: `1px solid ${mapStyle === s.id ? 'rgba(255,255,255,.25)' : 'rgba(255,255,255,.08)'}`,
-            borderRadius: 3, background: mapStyle === s.id ? 'rgba(30,30,30,.95)' : 'rgba(10,10,10,.85)',
-            color: mapStyle === s.id ? '#e8e8e8' : '#555', fontFamily: "'JetBrains Mono',monospace",
-            fontSize: 9, fontWeight: 600, letterSpacing: '.1em', cursor: 'pointer',
-            backdropFilter: 'blur(8px)', transition: 'all .15s',
-          }}>{s.label}</button>
+        {STYLES.map(style => (
+          <button key={style.id} onClick={() => setMapStyle(style.id)} style={{
+            padding: '6px 10px',
+            background: mapStyle === style.id ? 'rgba(30,30,30,.96)' : 'rgba(10,10,10,.86)',
+            border: '1px solid rgba(255,255,255,.08)',
+            color: mapStyle === style.id ? '#fff' : '#666',
+            borderRadius: 3, fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '.08em', cursor: 'pointer',
+          }}>{style.label}</button>
         ))}
       </div>
-
-      {!isMobile && (
-        <div style={{ position: 'absolute', bottom: 14, left: 14, zIndex: 500, background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 4, padding: '10px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, display: 'flex', flexDirection: 'column', gap: 7, backdropFilter: 'blur(8px)' }}>
-          {[{ color: '#ff4444', label: 'Misattributed' }, { color: '#b388ff', label: 'Tunnel' }, { color: '#d69e2e', label: 'Weapons' }, { color: '#4299e1', label: 'Command' }].map(item => (
-            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
-              <span style={{ color: '#555', letterSpacing: '.07em' }}>{item.label}</span>
-            </div>
-          ))}
-          {activeRadius > 0 && (
-            <div style={{ borderTop: '1px solid rgba(255,255,255,.06)', paddingTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 10, height: 6, border: '1px dashed #ff4444', opacity: .7, borderRadius: 1, flexShrink: 0 }} />
-              <span style={{ color: '#ff6b6b', letterSpacing: '.07em' }}>Blast ~{activeRadius}m</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {isMobile && (
-                <>
-                <div style={{ position: 'absolute', top: 14, left: 14, zIndex: 500, background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 4, padding: '10px 12px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, display: 'flex', flexDirection: 'column', gap: 7, backdropFilter: 'blur(8px)' }}>
-
-  {[{ color: '#ff4444', label: 'Misattributed' }, { color: '#b388ff', label: 'Tunnel' }, { color: '#d69e2e', label: 'Weapons' }, { color: '#4299e1', label: 'Command' }].map(item => (
-            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: item.color, flexShrink: 0 }} />
-              <span style={{ color: '#555', letterSpacing: '.07em' }}>{item.label}</span>
-            </div>
-          ))}
-
-</div>
-        <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, pointerEvents: 'none' }}>
-          
-     
-          {activeRadius > 0 && (
-            <div style={{ background: 'rgba(229,62,62,.2)', border: '1px solid rgba(229,62,62,.5)', borderRadius: 20, padding: '5px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#ff6b6b', letterSpacing: '.08em', whiteSpace: 'nowrap', fontWeight: 600 }}>
-              ⚠ BLAST RADIUS · ~{activeRadius}m
-            </div>
-          )}
-          <div style={{ background: 'rgba(10,10,10,.88)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 20, padding: '6px 14px', fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#555', letterSpacing: '.08em', whiteSpace: 'nowrap', backdropFilter: 'blur(8px)' }}>
-            TAP INCIDENT TO EXPLORE
-          </div>
-        </div>
-        </>
-      )}
-
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)', animation: 'scanline 8s linear infinite', pointerEvents: 'none', zIndex: 400 }} />
-      <style>{`@keyframes scanline{0%{top:0;opacity:.3}100%{top:100%;opacity:0}}`}</style>
     </div>
   );
 }
