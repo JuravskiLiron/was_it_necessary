@@ -4,9 +4,9 @@ interface Props { onEnter: () => void; }
 
 const STEP_IMGS = [
   'https://i.pinimg.com/736x/13/63/e5/1363e56b9435afa387ee8302f4c8b72d.jpg',
-  './src/uploads/Screenshot 2026-05-23 at 20.14.59.png',
-  './src/uploads/Screenshot 2026-05-23 at 20.15.54.png',
-  './src/uploads/Screenshot 2026-05-23 at 20.16.26.png',
+  'https://i.pinimg.com/736x/b5/5a/97/b55a97f822deb510f51addeb7fe1f29b.jpg',
+  'https://i.pinimg.com/736x/c0/41/8f/c0418f1039e0f7b4c7fd592c9eb9e100.jpg',
+  'https://i.pinimg.com/736x/fb/7e/ff/fb7effcd97cc6e302057dd404ca08567.jpg',
 ];
 
 export function Landing({ onEnter }: Props) {
