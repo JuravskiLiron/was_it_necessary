@@ -77,12 +77,7 @@ export function Landing({ onEnter }: Props) {
                 WasItNecessary?
               </span>
             </div>
-            <button onClick={handleEnter} style={{
-              background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.12)',
-              borderRadius: 20, padding: '7px 14px', fontSize: 10,
-              color: 'rgba(255,255,255,.5)', letterSpacing: '.1em',
-              cursor: 'pointer', fontFamily: 'inherit', WebkitTapHighlightColor: 'transparent',
-            }}>SKIP</button>
+           
           </nav>
 
           <div style={{
@@ -146,57 +141,12 @@ export function Landing({ onEnter }: Props) {
                   }}>LEARN MORE ↓</button>
               </div>
 
-              <p style={{ fontSize: 9, color: 'rgba(255,255,255,.2)', letterSpacing: '.08em' }}>
-                No account · No ads · Open source
-              </p>
+        
             </div>
           </div>
         </section>
 
-        {/* ══ STATS ══ */}
-        <section style={{
-          background: '#0e1108', padding: '56px 26px 52px',
-          borderTop: '1px solid rgba(255,255,255,.06)',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          {/* subtle bg pattern */}
-          <div style={{
-            position: 'absolute', inset: 0, opacity: .03,
-            backgroundImage: 'radial-gradient(circle, #c8b89a 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-          }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <p style={{
-              fontSize: 10, color: '#c8b89a', letterSpacing: '.18em',
-              textTransform: 'uppercase', marginBottom: 36,
-              display: 'flex', alignItems: 'center', gap: 10,
-            }}>
-              <span style={{ width: 18, height: 1, background: '#c8b89a', display: 'inline-block' }} />
-              By the numbers
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {[
-                { n: '247', l: 'outlets reported Al-Ahli as an Israeli strike', c: '#c8b89a' },
-                { n: '164', l: 'never issued a correction — still live today', c: '#d4a0a0' },
-                { n: '4', l: 'Western intel agencies confirmed: not Israel', c: '#8fb8d4' },
-                { n: '3m', l: 'actual crater — 6× too small for any IDF munition', c: '#a8c5a0' },
-              ].map((item, i) => (
-                <div key={i} style={{
-                  padding: '24px 18px 22px',
-                  background: 'rgba(255,255,255,.03)',
-                  border: '1px solid rgba(255,255,255,.07)',
-                  borderRadius: 12,
-                }}>
-                  <div style={{
-                    fontSize: 38, fontWeight: 800, color: item.c,
-                    lineHeight: 1, marginBottom: 10, letterSpacing: '-1px',
-                  }}>{item.n}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,.38)', lineHeight: 1.55 }}>{item.l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+       
 
         {/* ══ WHY THIS EXISTS ══ */}
         <section style={{
