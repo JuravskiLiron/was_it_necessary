@@ -34,8 +34,6 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
 
   const ev = event as StrikeEvent & { mediaStats?: any; blastRadius?: number };
   const cfg = CATEGORY_CONFIG[event.category] ?? { label: event.category, color: '#3b82f6', icon: '📍' };
-  const sc = SC[event.verificationStatus] ?? '#3b82f6';
-  const sl = SL[event.verificationStatus] ?? event.verificationStatus;
 
   const TABS: { id: Tab; label: string; count?: number }[] = [
     { id: 'timeline', label: 'Timeline' },
@@ -61,7 +59,6 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
           <div className="sb-title">{event.title}</div>
           <div className="sb-sub">{event.subtitle}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginTop: 8 }}>
-            <div className="sb-status" style={{ background: `${sc}18`, color: sc, border: `1px solid ${sc}28` }}>{sl}</div>
             {ev.blastRadius && ev.blastRadius > 0 && (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 8px', borderRadius: 3, background: 'rgba(239,68,68,.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,.2)', fontFamily: 'var(--ff)', fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.07em' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', border: '1.5px dashed #ef4444' }} />
@@ -133,7 +130,7 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
               <div className="cas-row">
                 <div className="cas-box">
                   <div className="cas-n" style={{ color: 'var(--red)' }}>{String(event.casualties.reported)}</div>
-                  <div className="cas-l">Hamas Claimed</div>
+                  <div className="cas-l">Claimed</div>
                 </div>
                 <div className="cas-box">
                   <div className="cas-n" style={{ color: 'var(--green)' }}>{String(event.casualties.verified)}</div>

@@ -16,7 +16,6 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     coordinates: [31.5213, 34.4662],
     date: '2023-10-17',
     category: 'hospital',
-    verificationStatus: 'debunked',
     summary: 'Hamas blamed Israel. US, UK, French and Canadian intelligence + 5 independent investigations proved it was a misfired PIJ rocket.',
     fullDescription: '',
     targetJustification: 'Israel did not strike this hospital. Misfired Palestinian Islamic Jihad rocket — confirmed by US, UK, French and Canadian intelligence and every major independent investigation.',
@@ -193,7 +192,6 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     coordinates: [31.5233, 34.4614],
     date: '2023-11-15',
     category: 'tunnel',
-    verificationStatus: 'verified',
     summary: 'IDF exposed Hamas military command built beneath Al-Shifa. CNN entered and filmed the tunnels on camera. US government confirmed it matched prior intelligence.',
     fullDescription: '',
     targetJustification: 'Hamas deliberately built military command beneath Gaza\'s largest hospital — a war crime under IHL. Confirmed by CNN, BBC, and the US government on camera.',
@@ -336,7 +334,6 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     coordinates: [31.3479, 34.3055],
     date: '2024-02-12',
     category: 'weapons_depot',
-    verificationStatus: 'verified',
     summary: 'IDF struck active Hamas Qassam rocket manufacturing. Warning issued 3h prior. Thermal satellite + ground recovery confirmed weapons storage.',
     fullDescription: '',
     targetJustification: 'Active Qassam rocket manufacturing confirmed by three independent indicators: prior intelligence, post-strike thermal secondary explosions, physical recovery of rocket components.',
@@ -452,7 +449,6 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     coordinates: [33.2740, 35.2980],
     date: '2024-06-18',
     category: 'rocket_launch',
-    verificationStatus: 'verified',
     summary: 'Israeli military struck a Hezbollah launch site used for cross-border rocket fire from southern Lebanon.',
     fullDescription: '',
     targetJustification: 'According to the IDF, the site was linked to rocket launches toward northern Israel earlier that day.',
@@ -510,7 +506,6 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     coordinates: [32.4595, 35.3009],
     date: '2024-08-28',
     category: 'command_center',
-    verificationStatus: 'verified',
     summary: 'Israeli security forces conducted a raid in Jenin targeting armed militant infrastructure and explosives manufacturing.',
     fullDescription: '',
     targetJustification: 'Israeli authorities said the raid targeted militants linked to shooting attacks and explosive device production.',
@@ -560,14 +555,174 @@ export const DEMO_EVENTS: StrikeEvent[] = [
       },
     ],
   },
+  
+   {
+  id: 'israeliranonbatyam',
+
+  title: 'Iranian missile impact in Bat Yam',
+
+  subtitle: 'Israel · Bat Yam · June 15 2025',
+
+  coordinates: [32.026107, 34.749636],
+
+  date: '2025-06-15',
+
+  category: 'israel_homes',
+
+  summary:
+    'Iranian ballistic missile impacted a residential area in Bat Yam during the June 2025 escalation with Israel.',
+
+  fullDescription:
+    'A ballistic missile launched from Iran struck a residential district in Bat Yam causing major structural damage to civilian apartment buildings and surrounding infrastructure.',
+
+  targetJustification:
+    'No military target was identified at the impact location.',
+
+  warningGiven: true,
+
+  casualties: {
+    reported: '400+ injured',
+    verified: 'confirmed',
+    notes:
+      'Israeli emergency services reported civilian deaths and injuries at the scene.',
+  },
+
+  tags: [
+    'Bat Yam',
+    'Iran',
+    'ballistic missile',
+    'civilian area',
+    'residential buildings',
+  ],
+
+  verifiedBy: 'Editorial Team',
+
+  lastUpdated: '2025-06-18',
+
+  images: [
+    {
+      url: 'https://static-cdn.toi-media.com/www/uploads/2025/06/55555.mp4',
+      caption: 'Damage in Bat Yam after Iranian missile impact.',
+    },
+  ],
+
+  falseClaims: [],
+
+  sources: [],
+
+  evidence: [
+    'Geolocated impact footage',
+    'Emergency response recordings',
+    'Damage assessment imagery',
+  ],
+
+  blastRadius: 170,
+
+  streetZoom: 16,
+
+  mediaStats: {
+    totalReported: 84,
+    reportedFalsely: 2,
+    correctedLater: 1,
+    neverCorrected: 1,
+
+    outlets: [
+      {
+        name: 'Reuters',
+        initialClaim:
+          'Reuters reported missile impacts in Bat Yam causing civilian casualties.',
+        corrected: false,
+        sourceUrl: 'https://www.reuters.com/world/middle-east/',
+      },
+    ],
+  } as MediaStats,
+
+  videos: [
+    {
+      youtubeId: 'SrwS-Nhy1fA',
+      title: 'Bat Yam missile impact aftermath',
+      source: 'Reuters',
+    },
+  ],
+
+  claimsVsFacts: [
+    {
+      claimTime: 'Initial reports',
+
+      claimSource: 'Social media accounts',
+
+      claim:
+        '"The missile struck a military facility."',
+
+      factTime: 'Post-impact analysis',
+
+      factSource: 'OSINT imagery',
+
+      fact:
+        'Visual evidence showed the impact site was a civilian residential neighborhood.',
+
+      verdict: 'false',
+
+      factUrl: '',
+    },
+  ],
+
+  timeline: [
+    {
+      phase: 'WHAT HAPPENED',
+
+      phaseColor: '#3b82f6',
+
+      steps: [
+        {
+          time: 'June 15 · Night',
+
+          title: 'Missile impact in Bat Yam',
+
+          text:
+            'An Iranian ballistic missile struck a residential neighborhood in Bat Yam.',
+        },
+
+        {
+          time: 'Following hours',
+
+          title: 'Rescue operations',
+
+          text:
+            'Emergency teams searched damaged apartment buildings and evacuated civilians.',
+        },
+      ],
+    },
+
+    {
+      phase: 'VERIFIED INFORMATION',
+
+      phaseColor: '#22c55e',
+
+      steps: [
+        {
+          time: 'After impact',
+
+          title: 'Civilian area confirmed',
+
+          debunk:
+            'Photos and geolocated footage confirmed the strike damaged civilian residential buildings.',
+
+          sources: ['OSINT', 'Reuters'],
+        },
+      ],
+    },
+  ],
+}
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
   hospital:       { label: 'Misattributed to Israel', color: '#ef4444', icon: '🏥' },
-  tunnel:         { label: 'Tunnel / Underground',    color: '#a78bfa', icon: '⛏' },
-  weapons_depot:  { label: 'Weapons Depot',           color: '#f59e0b', icon: '💣' },
-  command_center: { label: 'Command Center',          color: '#06b6d4', icon: '🎯' },
-  rocket_launch:  { label: 'Rocket Launch Site',      color: '#22c55e', icon: '🚀' },
+  tunnel:         { label: 'Tunnel / Underground',    color: '#ef4444', icon: '⛏' },
+  weapons_depot:  { label: 'Weapons Depot',           color: '#ef4444', icon: '💣' },
+  command_center: { label: 'Command Center',          color: '#ef4444', icon: '🎯' },
+  rocket_launch:  { label: 'Rocket Launch Site',      color: '#ef4444', icon: '🚀' },
+  israel_homes:   { label: 'Israeli Homes',           color: '#ef4444', icon: '🏠' },
 };
 
 export const ARENAS = [

@@ -31,7 +31,7 @@ const STYLES: { id: MapStyle; label: string; url: string }[] = [
 
 const BUILDING_DATA: Record<string, {
   popupCoords: [number, number];
-  target: { bounds: [[number,number],[number,number]]; label: string };
+  target: { bounds: [[number,number],[number,number]]; label: string } ;
   context: { bounds: [[number,number],[number,number]]; label: string; icon: string }[];
 }> = {
   'al-ahli-hospital-2023': {
@@ -59,6 +59,11 @@ const BUILDING_DATA: Record<string, {
     target: { bounds: [[32.459108,35.30136],[32.459292,35.301606]], label: 'COMMAND NODE' },
     context: [{ bounds: [[32.45876,35.30102],[32.45962,35.30192]], label: 'URBAN BLOCK', icon: '🏘' }],
   },
+  'israeliranonbatyam': {
+    popupCoords: [32.026107, 34.749636],
+    target: { bounds: [[32.027086, 34.748929],[32.024697, 34.751652]], label: '' },
+    context: [{ bounds: [[32.027086, 34.748929],[32.024697, 34.751652]], label: 'NEIGHBORHOOD', icon: '🏘' }],
+  },
 };
 
 function makeInvisibleIcon(): L.DivIcon {
@@ -74,6 +79,7 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
   const onSelectRef = useRef(onSelect);
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
   const [mapStyle, setMapStyle] = useState<MapStyle>('2d');
+  const [legendOpen, setLegendOpen] = useState(true);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -135,7 +141,6 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
 
     events.forEach(event => {
       const cfg = CATEGORY_CONFIG[event.category] ?? { label: '', color: '#ff3333' };
-      const sc = STATUS_COLOR[event.verificationStatus] ?? '#22c55e';
       const data = BUILDING_DATA[event.id];
       if (!data) return;
 
@@ -206,7 +211,6 @@ dot.on('click', () => {
           <div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#7d8694;margin-bottom:8px;font-weight:600;">${cfg.label}</div>
           <div style="font-size:16px;font-weight:700;color:#f3f5f7;margin-bottom:6px;">${event.title}</div>
           <div style="font-size:12px;color:#9aa4b2;margin-bottom:14px;line-height:1.45;">${event.subtitle}</div>
-          <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;margin-bottom:16px;background:${sc}15;color:${sc};border:1px solid ${sc}35;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;">● ${event.verificationStatus}</div>
           <button onclick="window.__sel?.('${event.id}')" style="width:100%;padding:11px;background:${cfg.color};color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.06em;">VIEW FULL BREAKDOWN</button>
         </div>
       `);
@@ -225,26 +229,36 @@ dot.on('click', () => {
   return (
     <div className="map-wrap" style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      <div style={{
-  position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
-  zIndex: 500, pointerEvents: 'none',
-  background: 'rgba(10,10,10,.85)', border: '1px solid rgba(255,255,255,.1)',
-  borderRadius: 20, padding: '7px 16px',
-  fontFamily: 'JetBrains Mono, monospace', fontSize: 10,
-  color: 'rgba(255,255,255,.45)', letterSpacing: '.08em', whiteSpace: 'nowrap',
-  backdropFilter: 'blur(8px)',
-}}>
-  TAP DOT · TAP RED SQUARE TO EXPLORE
-</div>
+    
+{/* ── LEGEND PANEL ── */}
+    <div style={{ position: 'absolute', top: 14, left: 14, zIndex: 500, fontFamily: "'JetBrains Mono', monospace", display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+        <button onClick={() => setLegendOpen(o => !o)} style={{ background: 'rgba(10,12,10,.92)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: legendOpen ? '#fff' : 'rgba(255,255,255,.45)', letterSpacing: '.1em', display: 'flex', alignItems: 'center', gap: 6, WebkitTapHighlightColor: 'transparent' }}>
+          <span style={{ fontSize: 10 }}></span>  {legendOpen ? 'CLOSE' : 'OPEN'}
+        </button>
+        {legendOpen && (
+          <div style={{ background: 'rgba(10,12,10,.92)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 8, padding: '12px 14px', backdropFilter: 'blur(8px)', minWidth: 172 }}>
+            <div style={{ fontSize: 8, color: 'rgba(255,255,255,.3)', letterSpacing: '.14em', textTransform: 'uppercase' as const, marginBottom: 10, fontWeight: 700 }}>MAP LEGEND</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,.07)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff3b30', boxShadow: '0 0 6px #ff3b30', flexShrink: 0 }} /><span style={{ fontSize: 9, color: 'rgba(255,255,255,.55)' }}>Incident marker</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 10, border: '2px solid #ff3b30', background: 'rgba(255,59,48,.15)', borderRadius: 2, flexShrink: 0 }} /><span style={{ fontSize: 9, color: 'rgba(255,255,255,.55)' }}>Strike zone</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 10, border: '1.5px solid rgba(255,255,255,.7)', background: 'rgba(255,255,255,.05)', borderRadius: 2, flexShrink: 0 }} /><span style={{ fontSize: 9, color: 'rgba(255,255,255,.55)' }}>Surrounding area</span></div>
+          
+            </div>
+            <div style={{ fontSize: 8, color: 'rgba(255,255,255,.3)', letterSpacing: '.14em', textTransform: 'uppercase' as const, marginBottom: 8, fontWeight: 700 }}>HOW TO NAVIGATE</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {[{ step: '1', text: 'Tap dot → camera flies in' }, { step: '2', text: 'Tap red zone → popup opens' }, { step: '3', text: 'Press button → full report' }].map(s => (
+                <div key={s.step} style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
+                  <div style={{ width: 14, height: 14, borderRadius: 3, background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: 'rgba(255,255,255,.4)', fontWeight: 700, flexShrink: 0 }}>{s.step}</div>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,.4)', lineHeight: 1.5 }}>{s.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
       <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 500, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {STYLES.map(style => (
-          <button key={style.id} onClick={() => setMapStyle(style.id)} style={{
-            padding: '6px 10px',
-            background: mapStyle === style.id ? 'rgba(30,30,30,.96)' : 'rgba(10,10,10,.86)',
-            border: '1px solid rgba(255,255,255,.08)',
-            color: mapStyle === style.id ? '#fff' : '#666',
-            borderRadius: 3, fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '.08em', cursor: 'pointer',
-          }}>{style.label}</button>
+          <button key={style.id} onClick={() => setMapStyle(style.id)} style={{ padding: '6px 10px', background: mapStyle === style.id ? 'rgba(30,30,30,.96)' : 'rgba(10,10,10,.86)', border: '1px solid rgba(255,255,255,.08)', color: mapStyle === style.id ? '#fff' : '#666', borderRadius: 3, fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '.08em', cursor: 'pointer' }}>{style.label}</button>
         ))}
       </div>
     </div>

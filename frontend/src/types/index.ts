@@ -1,4 +1,4 @@
-export type EventCategory = 'hospital' | 'tunnel' | 'weapons_depot' | 'command_center' | 'rocket_launch';
+export type EventCategory = 'hospital' | 'tunnel' | 'weapons_depot' | 'command_center' | 'rocket_launch'| 'israel_homes';
 export type VerificationStatus = 'verified' | 'disputed' | 'debunked';
 
 export interface VideoEmbed {
@@ -56,7 +56,6 @@ export interface StrikeEvent {
   coordinates: [number, number];
   date: string;
   category: EventCategory;
-  verificationStatus: VerificationStatus;
   summary: string;
   fullDescription: string;
   targetJustification: string;

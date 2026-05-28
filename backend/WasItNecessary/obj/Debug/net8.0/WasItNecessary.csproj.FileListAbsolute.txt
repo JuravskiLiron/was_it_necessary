@@ -40,3 +40,4 @@
 /Users/lironjuravski/Downloads/was_it_necessary/backend/WasItNecessary/obj/Debug/net8.0/WasItNecessary.pdb
 /Users/lironjuravski/Downloads/was_it_necessary/backend/WasItNecessary/obj/Debug/net8.0/WasItNecessary.genruntimeconfig.cache
 /Users/lironjuravski/Downloads/was_it_necessary/backend/WasItNecessary/obj/Debug/net8.0/ref/WasItNecessary.dll
+/Users/lironjuravski/Downloads/was_it_necessary/backend/WasItNecessary/obj/Debug/net8.0/WasItNecessary.sourcelink.json

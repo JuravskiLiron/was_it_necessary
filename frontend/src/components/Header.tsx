@@ -26,19 +26,8 @@ export function Header({ total }: Props) {
       <div className="h-div" />
 
      
-      <div className="h-right">
-        <div className="h-stat">
-          <div className="h-stat-n" style={{ color: 'var(--txt2)' }}>{total}</div>
-          <div className="h-stat-l">Incidents</div>
-        </div>
-        <div className="h-stat">
-          <div className="h-stat-n" style={{ color: 'var(--green)' }}>3</div>
-          <div className="h-stat-l">Verified</div>
-        </div>
-        <div className="h-stat">
-          <div className="h-stat-n" style={{ color: 'var(--red)' }}>1</div>
-          <div className="h-stat-l">Debunked</div>
-        </div>
+      <div className="h-right logo-text" >
+        DEMO VERSION
        
       </div>
     </header>
