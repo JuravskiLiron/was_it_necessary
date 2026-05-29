@@ -137,7 +137,7 @@ export function Landing({ onEnter }: Props) {
     >
       Interactive
       <br />
-      Conflict Archive
+      Conflict Map
     </h1>
 
     <p
@@ -148,7 +148,7 @@ export function Landing({ onEnter }: Props) {
         margin: '0 0 34px',
       }}
     >
-  Explore the conflict through verified evidence, documented strikes, satellite imagery, videos, eyewitness reports, and forensic investigations mapped across Gaza, Israel, Lebanon, and the West Bank. Understand what happened, where it happened, and who verified it through interactive maps, timelines, geolocation analysis, and cross-checked reporting.
+  Explore the conflict through verified evidence, documented strikes, satellite imagery, videos, eyewitness reports, and forensic investigations mapped across <span style={{ color: '#c8b89a', fontWeight: 'bold', fontSize: 20 }}>Gaza, Israel, Lebanon, and the West Bank.</span> Understand what happened, where it happened, and who verified it through interactive maps, timelines, geolocation analysis, and cross-checked reporting.
     </p>
 
     
@@ -232,7 +232,7 @@ EXAMPLE            </p>
             ))}
           </div>
           <div style={{ width: '100%', height: 280 }}>
-            <Slider before={c.before} after={c.after} dateB={c.before_date} dateA={c.after_date} />
+            <Slider before={c.before} after={c.after} dateB={c.after_date} dateA={c.before_date} />
           </div>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,.02)' }}>
             <div >

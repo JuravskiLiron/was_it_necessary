@@ -27,7 +27,7 @@ export function Header({ total }: Props) {
 
      
       <div className="h-right logo-text" >
-        DEMO VERSION
+        DEMO VERSION 1.0.1
        
       </div>
     </header>

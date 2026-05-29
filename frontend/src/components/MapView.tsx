@@ -159,7 +159,7 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
       dot.addTo(map);
       (dot as any)._isDot = true;
 dot.on('click', () => {
-  map.flyTo(dotCenter, 16, { duration: 1.2 });
+  map.flyTo(dotCenter, 16, { duration: 0.5, animate: true });
   
 });      buildingLayersRef.current.push(dot);
 

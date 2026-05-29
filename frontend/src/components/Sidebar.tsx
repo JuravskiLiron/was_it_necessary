@@ -108,7 +108,7 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
                     <div className="phase-tag" style={{ background: `${section.phaseColor}12`, color: section.phaseColor }}>{section.phase}</div>
                     {section.steps.map((step, ti) => (
                       <div key={ti} className="tl-card">
-                        <div style={{ fontFamily: 'var(--ff)', fontSize: 8, color: 'var(--txt3)', marginBottom: 4 }}>{step.time}</div>
+                        <div style={{ fontFamily: 'var(--ff)', textDecoration: 'underline', textDecorationColor: 'red',textUnderlineOffset: 5, fontWeight: 'bold', fontSize: 12, color: 'var(--txt3)', marginBottom: 4 }}>{step.time}</div>
                         <div className="tl-ctitle">{step.title}</div>
                         {step.claim && <div className="tl-claim">"{step.claim}"</div>}
                         {step.text && <div className="tl-ctext" style={{ marginTop: step.claim ? 7 : 0 }}>{step.text}</div>}
@@ -160,7 +160,7 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
           {tab === 'media' && (
             <>
               <div style={{ fontFamily: 'var(--ffs)', fontSize: 12, color: 'var(--txt2)', lineHeight: 1.6, marginBottom: 14, padding: '4px 0' }}>
-                How media outlets reported this incident — and how many never corrected the record.
+                How media reported this incident, and how many never corrected the false record.
               </div>
               {ev.mediaStats
                 ? <MediaStatsPanel data={ev.mediaStats} />
@@ -173,7 +173,7 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
           {tab === 'videos' && (
             <>
               <div style={{ fontFamily: 'var(--ffs)', fontSize: 12, color: 'var(--txt2)', lineHeight: 1.6, marginBottom: 14, padding: '4px 0' }}>
-                Primary source video evidence — CNN, IDF, satellite analysis.
+                Primary source video evidence/proofs from the incident.
               </div>
               <VideoPanel videos={event.videos} />
             </>

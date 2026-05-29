@@ -691,6 +691,7 @@ export const DEMO_EVENTS: StrikeEvent[] = [
           text:
             'Emergency teams searched damaged apartment buildings and evacuated civilians.',
         },
+       
       ],
     },
 
@@ -717,18 +718,18 @@ export const DEMO_EVENTS: StrikeEvent[] = [
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  hospital:       { label: 'Misattributed to Israel', color: '#ef4444', icon: '🏥' },
-  tunnel:         { label: 'Tunnel / Underground',    color: '#ef4444', icon: '⛏' },
-  weapons_depot:  { label: 'Weapons Depot',           color: '#ef4444', icon: '💣' },
-  command_center: { label: 'Command Center',          color: '#ef4444', icon: '🎯' },
-  rocket_launch:  { label: 'Rocket Launch Site',      color: '#ef4444', icon: '🚀' },
-  israel_homes:   { label: 'Israeli Homes',           color: '#ef4444', icon: '🏠' },
+  hospital:       { label: 'Misattributed to Israel', color: '#ef4444', icon: '' },
+  tunnel:         { label: 'Tunnel / Underground',    color: '#ef4444', icon: '' },
+  weapons_depot:  { label: 'Weapons Depot',           color: '#ef4444', icon: '' },
+  command_center: { label: 'Command Center',          color: '#ef4444', icon: '' },
+  rocket_launch:  { label: 'Rocket Launch Site',      color: '#ef4444', icon: '' },
+  israel_homes:   { label: 'Civilian Neighborhood',           color: '#ef4444', icon: '' },
 };
 
 export const ARENAS = [
   { id: 'israel',   label: 'Israel',     locked: false, center: [32.00, 34.90] as [number, number], zoom: 8  },
   { id: 'gaza',     label: 'Gaza',       locked: false, center: [31.50, 34.47] as [number, number], zoom: 10 },
-  { id: 'lebanon',  label: 'Lebanon',    locked: false, center: [33.88, 35.50] as [number, number], zoom: 10 },
+  { id: 'lebanon',  label: 'Lebanon',    locked: false, center: [33.70, 35.50] as [number, number], zoom: 9 },
   { id: 'westbank', label: 'West Bank',  locked: false, center: [31.90, 35.20] as [number, number], zoom: 10 },
   { id: 'syria',    label: 'Syria',      locked: true,  center: [33.50, 36.30] as [number, number], zoom: 9  },
 ];

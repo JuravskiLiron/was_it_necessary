@@ -31,7 +31,7 @@ function SourceCard({ video }: { video: VideoEmbed }) {
           <div style={{ fontFamily: 'var(--ff)', fontSize: 9, color: 'var(--txt3)', letterSpacing: '.07em', textTransform: 'uppercase' }}>{video.source}</div>
         </div>
       </div>
-      {/* Instructions */}
+      {/* Instructions 
       <div style={{ background: 'var(--bg3)', borderRadius: 5, padding: '10px 12px', border: '1px solid var(--b0)' }}>
         <div style={{ fontFamily: 'var(--ff)', fontSize: 8, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 6, fontWeight: 700 }}>
           TO ADD THIS VIDEO
@@ -42,6 +42,7 @@ function SourceCard({ video }: { video: VideoEmbed }) {
           3. Paste it into <span style={{ color: 'var(--blue)' }}>youtubeId</span> field in events.ts
         </div>
       </div>
+      */}
     </div>
   );
 }
