@@ -24,7 +24,7 @@ const STATUS_COLOR: Record<string, string> = {
 type MapStyle = '2d' | 'satellite' | 'hybrid';
 
 const STYLES: { id: MapStyle; label: string; url: string }[] = [
-  { id: '2d', label: '2D', url: `https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
+  { id: '2d', label: '2D', url: `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
   { id: 'satellite', label: 'SAT', url: `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
   { id: 'hybrid', label: 'HYB', url: `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}` },
 ];
@@ -171,7 +171,7 @@ dot.on('click', () => {
       // Context rectangles
       data.context.forEach(ctx => {
         const rect = L.rectangle(ctx.bounds, {
-          color: 'rgba(255,255,255,0.92)', fillColor: 'rgba(255,255,255,0.02)',
+          color: 'rgba(255,255,255,0.92)', fillColor: 'rgb(0 0 0 / 0.02)',
           fillOpacity: 1, weight: 1.5, interactive: false,
         });
         rect.addTo(map);
@@ -181,7 +181,14 @@ dot.on('click', () => {
         const topLeft = L.latLngBounds(ctx.bounds).getNorthWest();
         const label = L.divIcon({
           className: '', iconSize: [0,0], iconAnchor: [0,20],
-          html: `<div style="padding:3px 7px;font-family:'JetBrains Mono',monospace;font-size:9px;white-space:nowrap;letter-spacing:.05em;">${ctx.label}</div>`,
+          html: `<div style="color: #171b22;, padding:3px 7px;font-family:'JetBrains Mono',monospace;font-size:9px;white-space:nowrap;letter-spacing:.05em; font-weight: bold;
+ display: inline;
+\tbackground-color: rgba(0, 0, 0, 0.5);
+\tbox-shadow: -10px 0 0 rgba(0, 0, 0, 0.5), 10px 0 0 rgba(0, 0, 0, 0.5);
+\tpadding: 0 10px 0 0;
+\tcolor: #FFFFFF;
+\tline-height: 14px;
+\tfont-size: 9px;">${ctx.label}</div>`,
         });
         const lm = L.marker(topLeft, { icon: label, interactive: false });
         lm.addTo(map);
@@ -251,7 +258,7 @@ dot.on('click', () => {
             </div>
             <div style={{ fontSize: 8, color: 'rgba(255,255,255,.3)', letterSpacing: '.14em', textTransform: 'uppercase' as const, marginBottom: 8, fontWeight: 700 }}>HOW TO NAVIGATE</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {[{ step: '1', text: 'Tap dot → camera flies in' }, { step: '2', text: 'Tap red zone → popup opens' }, { step: '3', text: 'Press button → full report' }].map(s => (
+              {[{ step: '1', text: 'Tap dot → camera flies in' }, { step: '2', text: 'Tap red zone → popup opens' }].map(s => (
                 <div key={s.step} style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
                   <div style={{ width: 14, height: 14, borderRadius: 3, background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: 'rgba(255,255,255,.4)', fontWeight: 700, flexShrink: 0 }}>{s.step}</div>
                   <span style={{ fontSize: 9, color: 'rgba(255,255,255,.4)', lineHeight: 1.5 }}>{s.text}</span>

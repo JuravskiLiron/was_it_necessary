@@ -631,7 +631,7 @@ export const DEMO_EVENTS: StrikeEvent[] = [
         name: 'Reuters',
         initialClaim:
           'Reuters reported missile impacts in Bat Yam causing civilian casualties.',
-        corrected: false,
+        corrected: true,
         sourceUrl: 'https://www.reuters.com/world/middle-east/',
       },
     ],

@@ -66,9 +66,9 @@ export function Sidebar({ event, isOpen, onClose }: Props) {
               </div>
             )}
           </div>
-          <div className="sb-tags" style={{ marginTop: 10 }}>
+          {/*} <div className="sb-tags" style={{ marginTop: 10 }}>
             {event.tags.map(t => <span key={t} className="sb-tag">#{t}</span>)}
-          </div>
+          </div>*/}
         </div>
 
         {/* ── Tab Bar ── */}
