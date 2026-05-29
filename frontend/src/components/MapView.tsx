@@ -35,9 +35,13 @@ const BUILDING_DATA: Record<string, {
   context: { bounds: [[number,number],[number,number]]; label: string; icon: string }[];
 }> = {
   'al-ahli-hospital-2023': {
-    popupCoords: [31.503962, 34.466689],
-    target: { bounds: [[31.503875,34.466561],[31.504042,34.466796]], label: 'IMPACT SITE' },
-    context: [{ bounds: [[31.50368,34.46628],[31.50423,34.46706]], label: 'HOSPITAL COMPLEX', icon: '🏥' }],
+    popupCoords: [31.505223, 34.461375],
+    target: { bounds: [[31.505318, 34.461262],[31.505153, 34.461459]], label: 'IMPACT SITE' },
+    context: [{ bounds: [[31.505534, 34.460646
+
+],[31.504230, 34.462259
+
+]], label: 'HOSPITAL COMPLEX AND NEIGHBORHOOD', icon: '' }],
   },
   'shifa-tunnel-2023': {
     popupCoords: [31.521393, 34.443954],
@@ -99,6 +103,7 @@ export function MapView({ events, selectedEvent, onSelect, arenaCenter, arenaZoo
     tileLayer.addTo(map);
     tileLayerRef.current = tileLayer;
     mapRef.current = map;
+    setTimeout(() => map.invalidateSize(), 200);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     // ТОЛЬКО ЭТО ИСПРАВЛЕНО — зумend логика

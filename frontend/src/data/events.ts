@@ -13,7 +13,7 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     id: 'al-ahli-hospital-2023',
     title: 'Al-Ahli Hospital Explosion',
     subtitle: 'Gaza City · Oct 17, 2023',
-    coordinates: [31.5213, 34.4662],
+    coordinates: [31.505216, 34.461379],
     date: '2023-10-17',
     category: 'hospital',
     summary: 'Hamas blamed Israel. US, UK, French and Canadian intelligence + 5 independent investigations proved it was a misfired PIJ rocket.',
@@ -95,7 +95,7 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     } as MediaStats,
 
     videos: [
-      { youtubeId: '', title: 'NYT Visual Investigation: What caused the hospital explosion', source: 'New York Times' },
+      { youtubeId: 'nEe8pawDMBo', title: 'The truth about the Al-Ahli hospital bombing in Gaza.', source: 'YouTube' },
       { youtubeId: '', title: 'BBC Verify analysis of the Al-Ahli blast', source: 'BBC News' },
       { youtubeId: '', title: 'US Intelligence confirms: not an Israeli airstrike', source: 'CNN' },
     ],
@@ -187,7 +187,7 @@ export const DEMO_EVENTS: StrikeEvent[] = [
 
   {
     id: 'shifa-tunnel-2023',
-    title: 'Hamas Command — Al-Shifa Hospital',
+    title: 'Hamas Command Al-Shifa Hospital',
     subtitle: 'Gaza City · November 2023',
     coordinates: [31.5233, 34.4614],
     date: '2023-11-15',
@@ -201,7 +201,7 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     tags: ['Hamas tunnels', 'human shields', 'CNN confirmed', 'war crime', 'IHL violation'],
     verifiedBy: 'Editorial Team',
     lastUpdated: '2023-12-01',
-    images: [{ url: '', caption: '' }],
+    images: [{ url: 'https://www.idf.il/media/0rwej2er/2023-11-shifa-i.jpeg?optimize=false', caption: '' }],
     falseClaims: [], sources: [], evidence: [],
     blastRadius: 0,
     streetZoom: 17,
@@ -252,9 +252,9 @@ export const DEMO_EVENTS: StrikeEvent[] = [
     } as MediaStats,
 
     videos: [
-      { youtubeId: '', title: 'CNN visits tunnel shaft at Al-Shifa Hospital compound', source: 'CNN' },
+      { youtubeId: 'NDc9zmID9J8', title: 'CNN visits tunnel shaft at Al-Shifa Hospital compound', source: 'CNN' },
       { youtubeId: '', title: 'IDF shows weapons found inside Al-Shifa compound', source: 'IDF Spokesperson' },
-      { youtubeId: '', title: 'White House confirms findings match US intelligence', source: 'NBC News' },
+      { youtubeId: '', title: 'White House confirms findings match US intelligence', source: 'NBC News' },       
     ],
 
     claimsVsFacts: [

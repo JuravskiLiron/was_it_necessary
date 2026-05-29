@@ -72,7 +72,8 @@ export function VideoPanel({ videos }: Props) {
           <iframe
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
             src={`https://www.youtube.com/embed/${v.youtubeId}?autoplay=1${v.timestamp ? `&start=${timestampToSeconds(v.timestamp)}` : ''}&rel=0&modestbranding=1`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="autoplay; encrypted-media" 
+        
             allowFullScreen
           />
         ) : (
