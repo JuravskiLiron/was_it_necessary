@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { StrikeEvent } from '../types';
 import { CATEGORY_CONFIG } from '../data/events';
 
-const MAPTILER_KEY = '3HmScKjTlYXhu3JhKT2J';
+const MAPTILER_KEY = 'EimeM49g8BP66hDwJ8r9';
 
 interface Props {
   events: StrikeEvent[];
